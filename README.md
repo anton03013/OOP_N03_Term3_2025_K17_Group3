@@ -8,5 +8,4 @@
 1. Nguyen Nhat An
 2. Pham Duy Quang
 3. Tran Dinh Dung
-4. Nguyen Le Thu
 
