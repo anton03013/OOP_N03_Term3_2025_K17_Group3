@@ -26,9 +26,9 @@ Chào mừng bạn đến với **Platformer RPG 2D**, một trò chơi nhập v
    - Đánh bại đối thủ để giành chiến thắng!
 
 ## 👥 Thành Viên Nhóm
-  - 1. Nguyễn Nhật An
-  - 2. Phạm Duy Quang
-  - 3. Trần Đình Dũng
+  - 1 Nguyễn Nhật An
+  - 2 Phạm Duy Quang
+  - 3 Trần Đình Dũng
        
 ## 🏆 Cải Tiến Trong Tương Lai
   - Thêm các lớp nhân vật mới (ví dụ: Pháp Sư, Cung Thủ).
