@@ -1,6 +1,8 @@
 package gui;
 
 import model.*;
+import texture.AnimationHandler;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -16,13 +18,18 @@ public class BattleCanvas extends JPanel implements KeyListener {
     private boolean jumping = false;
     private int velocityY = 0;
 
+    private AnimationHandler p1Animation;
+
     public BattleCanvas() {
         setFocusable(true);
         addKeyListener(this);
         p1 = new Player("Anthoni", 100, 15);
         p2 = new Warrior("Grom", 100, 20);
         p1Y = groundY;
-
+    
+        // Инициализация анимации для Player 1
+        p1Animation = new AnimationHandler("d:/Visual/RPG/src/texture/char_blue.png", 55, 52, 1, 6, 5);
+    
         Timer gameLoop = new Timer(16, e -> {
             if (jumping) {
                 p1Y += velocityY;
@@ -33,6 +40,7 @@ public class BattleCanvas extends JPanel implements KeyListener {
                     velocityY = 0;
                 }
             }
+            p1Animation.update(); // Обновление анимации
             repaint();
         });
         gameLoop.start();
@@ -47,9 +55,8 @@ public class BattleCanvas extends JPanel implements KeyListener {
         g.fillRect(0, groundY, getWidth(), 5);
 
         // Player 1
-        g.setColor(Color.BLUE);
-        g.fillRect(p1X, p1Y - 40, 40, 40);
-        g.drawString(p1.getName() + " HP: " + p1.getHealth(), p1X, p1Y - 50);
+        p1Animation.draw(g, p1X, p1Y - 52); // Отображение анимации Player 1
+        g.drawString(p1.getName() + " HP: " + p1.getHealth(), p1X, p1Y - 60);
 
         // Player 2
         g.setColor(Color.RED);
@@ -89,14 +96,6 @@ public class BattleCanvas extends JPanel implements KeyListener {
                 }
             }
         }
-    }
-
-    private void drawHealthBar(Graphics g, int x, int hp, String name) {
-        g.drawRect(x, groundY - 25, 60, 10);
-        g.setColor(Color.GREEN);
-        g.fillRect(x, groundY - 25, Math.max(0, hp * 60 / 100), 10);
-        g.setColor(Color.BLACK);
-        g.drawString(name + " HP: " + hp, x, groundY - 30);
     }
 
     private void showWinner(Player winner) {
