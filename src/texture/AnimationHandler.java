@@ -30,13 +30,13 @@ public class AnimationHandler {
         frameCounter++;
         if (frameCounter >= frameDelay) {
             frameCounter = 0;
-            currentFrame = (currentFrame + 1) % cols; // Переключение между кадрами
+            currentFrame = (currentFrame + 1) % (rows * cols); // Переключение между всеми кадрами
         }
     }
 
     public void draw(Graphics g, int x, int y) {
-        int frameX = currentFrame * frameWidth; // Просто умножаем текущий кадр на ширину кадра
-        int frameY = 0; // Y всегда 0, так как у нас одна строка
+        int frameX = (currentFrame % cols) * frameWidth; // Координата X текущего кадра
+        int frameY = (currentFrame / cols) * frameHeight; // Координата Y текущего кадра
         g.drawImage(spriteSheet, x, y, x + frameWidth, y + frameHeight,
                     frameX, frameY, frameX + frameWidth, frameY + frameHeight, null);
     }
