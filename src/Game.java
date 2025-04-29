@@ -1,5 +1,5 @@
 import java.util.Scanner;
-
+package Character;
 public class Game {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
