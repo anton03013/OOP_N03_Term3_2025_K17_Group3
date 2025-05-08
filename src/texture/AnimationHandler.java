@@ -40,9 +40,4 @@ public class AnimationHandler {
         g.drawImage(spriteSheet, x, y, x + frameWidth, y + frameHeight,
                     frameX, frameY, frameX + frameWidth, frameY + frameHeight, null);
     }
-
-    public static void main(String[] args) {
-        AnimationHandler animationHandler = new AnimationHandler("d:/Visual/RPG/src/texture/char_blue.png", 55, 52, 1, 6, 5);
-        AnimationHandler p1Animation = new AnimationHandler("d:/Visual/RPG/src/texture/char_blue.png", 55, 52, 1, 6, 5);
-    }
 }

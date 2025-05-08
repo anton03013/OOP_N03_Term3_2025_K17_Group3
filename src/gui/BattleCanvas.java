@@ -18,7 +18,12 @@ public class BattleCanvas extends JPanel implements KeyListener {
     private boolean jumping = false;
     private int velocityY = 0;
 
-    private AnimationHandler p1Animation;
+    private boolean movingLeft = false;
+    private boolean movingRight = false;
+
+    private AnimationHandler currentAnimation;
+    private AnimationHandler idleAnimation;
+    private AnimationHandler runAnimation;
 
     public BattleCanvas() {
         setFocusable(true);
@@ -26,10 +31,12 @@ public class BattleCanvas extends JPanel implements KeyListener {
         p1 = new Player("Anthoni", 100, 15);
         p2 = new Warrior("Grom", 100, 20);
         p1Y = groundY;
-    
-        // Инициализация анимации для Player 1
-        p1Animation = new AnimationHandler("d:/Visual/RPG/src/texture/char_blue.png", 55, 52, 1, 6, 5);
-    
+
+        // Инициализация анимаций
+        idleAnimation = new AnimationHandler("d:/Visual/RPG/src/texture/IDLE.png", 96, 96, 1, 10, 5);
+        runAnimation = new AnimationHandler("d:/Visual/RPG/src/texture/RUN.png", 96, 96, 1, 16, 5);
+        currentAnimation = idleAnimation; // По умолчанию анимация ожидания
+
         Timer gameLoop = new Timer(16, e -> {
             if (jumping) {
                 p1Y += velocityY;
@@ -40,7 +47,22 @@ public class BattleCanvas extends JPanel implements KeyListener {
                     velocityY = 0;
                 }
             }
-            p1Animation.update(); // Обновление анимации
+
+            // Обновление позиции игрока
+            if (movingLeft || movingRight) {
+                currentAnimation = runAnimation; // Переключение на анимацию бега
+            } else {
+                currentAnimation = idleAnimation; // Переключение на анимацию ожидания
+            }
+
+            if (movingLeft) {
+                p1X = Math.max(0, p1X - 5); // Скорость движения влево
+            }
+            if (movingRight) {
+                p1X = Math.min(getWidth() - 40, p1X + 5); // Скорость движения вправо
+            }
+
+            currentAnimation.update(); // Обновление текущей анимации
             repaint();
         });
         gameLoop.start();
@@ -55,7 +77,7 @@ public class BattleCanvas extends JPanel implements KeyListener {
         g.fillRect(0, groundY, getWidth(), 5);
 
         // Player 1
-        p1Animation.draw(g, p1X, p1Y - 52); // Отображение анимации Player 1
+        currentAnimation.draw(g, p1X, p1Y - 80); // Отображение текущей анимации Player 1
         g.drawString(p1.getName() + " HP: " + p1.getHealth(), p1X, p1Y - 60);
 
         // Player 2
@@ -66,13 +88,11 @@ public class BattleCanvas extends JPanel implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        int step = 10;
-
         if (!p1.isAlive() || !p2.isAlive()) return;
 
         switch (e.getKeyCode()) {
-            case KeyEvent.VK_A -> p1X = Math.max(0, p1X - step);
-            case KeyEvent.VK_D -> p1X = Math.min(getWidth() - 40, p1X + step);
+            case KeyEvent.VK_A -> movingLeft = true; // Начать движение влево
+            case KeyEvent.VK_D -> movingRight = true; // Начать движение вправо
             case KeyEvent.VK_W -> {
                 if (!jumping) {
                     jumping = true;
@@ -98,11 +118,18 @@ public class BattleCanvas extends JPanel implements KeyListener {
         }
     }
 
+    @Override
+    public void keyReleased(KeyEvent e) {
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_A -> movingLeft = false; // Остановить движение влево
+            case KeyEvent.VK_D -> movingRight = false; // Остановить движение вправо
+        }
+    }
+
     private void showWinner(Player winner) {
         JOptionPane.showMessageDialog(this, "🏆 Winner: " + winner.getName());
         System.exit(0); // Завершение игры
     }
 
-    @Override public void keyReleased(KeyEvent e) {}
     @Override public void keyTyped(KeyEvent e) {}
 }
