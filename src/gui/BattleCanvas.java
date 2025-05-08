@@ -20,10 +20,12 @@ public class BattleCanvas extends JPanel implements KeyListener {
 
     private boolean movingLeft = false;
     private boolean movingRight = false;
+    private boolean attacking = false;
 
     private AnimationHandler currentAnimation;
     private AnimationHandler idleAnimation;
     private AnimationHandler runAnimation;
+    private AnimationHandler attackAnimation;
 
     public BattleCanvas() {
         setFocusable(true);
@@ -35,7 +37,8 @@ public class BattleCanvas extends JPanel implements KeyListener {
         // Инициализация анимаций
         idleAnimation = new AnimationHandler("d:/Visual/RPG/src/texture/IDLE.png", 96, 96, 1, 10, 5);
         runAnimation = new AnimationHandler("d:/Visual/RPG/src/texture/RUN.png", 96, 96, 1, 16, 5);
-        currentAnimation = idleAnimation; // По умолчанию анимация ожидания
+        attackAnimation = new AnimationHandler("d:/Visual/RPG/src/texture/ATTACK 1.png", 96, 96, 1, 7, 5);
+        currentAnimation = idleAnimation; //Default animation
 
         Timer gameLoop = new Timer(16, e -> {
             if (jumping) {
@@ -48,21 +51,25 @@ public class BattleCanvas extends JPanel implements KeyListener {
                 }
             }
 
-            // Обновление позиции игрока
+            // Updateint animation based on player state
             if (movingLeft || movingRight) {
-                currentAnimation = runAnimation; // Переключение на анимацию бега
-            } else {
-                currentAnimation = idleAnimation; // Переключение на анимацию ожидания
+                currentAnimation = runAnimation; // 
+            }   
+            else if (attacking) {
+                currentAnimation = attackAnimation; // 
+            } 
+            else {
+                currentAnimation = idleAnimation; // 
             }
 
             if (movingLeft) {
-                p1X = Math.max(0, p1X - 5); // Скорость движения влево
+                p1X = Math.max(0, p1X - 5); // Speed of left movement
             }
             if (movingRight) {
-                p1X = Math.min(getWidth() - 40, p1X + 5); // Скорость движения вправо
+                p1X = Math.min(getWidth() - 40, p1X + 5); // Speed of right movement
             }
 
-            currentAnimation.update(); // Обновление текущей анимации
+            currentAnimation.update(); 
             repaint();
         });
         gameLoop.start();
@@ -77,7 +84,7 @@ public class BattleCanvas extends JPanel implements KeyListener {
         g.fillRect(0, groundY, getWidth(), 5);
 
         // Player 1
-        currentAnimation.draw(g, p1X, p1Y - 80); // Отображение текущей анимации Player 1
+        currentAnimation.draw(g, p1X, p1Y - 80); // Current animation
         g.drawString(p1.getName() + " HP: " + p1.getHealth(), p1X, p1Y - 60);
 
         // Player 2
@@ -91,16 +98,17 @@ public class BattleCanvas extends JPanel implements KeyListener {
         if (!p1.isAlive() || !p2.isAlive()) return;
 
         switch (e.getKeyCode()) {
-            case KeyEvent.VK_A -> movingLeft = true; // Начать движение влево
-            case KeyEvent.VK_D -> movingRight = true; // Начать движение вправо
+            case KeyEvent.VK_A -> movingLeft = true; 
+            case KeyEvent.VK_D -> movingRight = true; 
             case KeyEvent.VK_W -> {
                 if (!jumping) {
                     jumping = true;
                     velocityY = -15;
                 }
             }
-            case KeyEvent.VK_SPACE -> {
-                if (Math.abs(p1X - p2X) < 60) { // Distance check for attack
+            case KeyEvent.VK_SPACE ->{
+                attacking = true; 
+                if (Math.abs(p1X - p2X) < 100) { // Distance check for attack
                     p1.attack(p2);
                     if (!p2.isAlive()) {
                         showWinner(p1);
@@ -123,6 +131,14 @@ public class BattleCanvas extends JPanel implements KeyListener {
         switch (e.getKeyCode()) {
             case KeyEvent.VK_A -> movingLeft = false; // Остановить движение влево
             case KeyEvent.VK_D -> movingRight = false; // Остановить движение вправо
+            case KeyEvent.VK_SPACE -> {
+                new Timer(500,
+                evt -> { // 500ms delay for response attack
+                    attacking = false; // Остановить атаку
+                    currentAnimation = idleAnimation; // Вернуться к анимации ожидания
+                    ((Timer) evt.getSource()).stop();
+                }).start();
+            }
         }
     }
 
