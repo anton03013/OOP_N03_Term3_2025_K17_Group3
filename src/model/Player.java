@@ -5,7 +5,7 @@ import java.util.Random;
 public class Player {
     private String name;
     private int health;
-    private int strength; // Добавлено поле strength
+    private int strength; 
     private Random random = new Random();
 
     public Player(String name, int health, int strength) {
@@ -16,13 +16,13 @@ public class Player {
 
     public String getName() { return name; }
     public int getHealth() { return health; }
-    public int getStrength() { return strength; } // Геттер для strength
+    public int getStrength() { return strength; } 
 
     public void setHealth(int health) {
         this.health = Math.max(0, health);
     }
 
-    public void setStrength(int strength) { // Сеттер для strength
+    public void setStrength(int strength) { 
         this.strength = Math.max(0, strength);
     }
 
@@ -35,7 +35,7 @@ public class Player {
     }
 
     public void attack(Player target) {
-        int damage = strength; // Используем strength для расчета урона
+        int damage = strength; 
         if (random.nextInt(100) < 25) {
             damage *= 2;
             System.out.println(name + " lands a CRITICAL HIT!");

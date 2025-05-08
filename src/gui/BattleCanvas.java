@@ -34,7 +34,7 @@ public class BattleCanvas extends JPanel implements KeyListener {
         p2 = new Warrior("Grom", 100, 20);
         p1Y = groundY;
 
-        // Инициализация анимаций
+        // Animations
         idleAnimation = new AnimationHandler("d:/Visual/RPG/src/texture/IDLE.png", 96, 96, 1, 10, 5);
         runAnimation = new AnimationHandler("d:/Visual/RPG/src/texture/RUN.png", 96, 96, 1, 16, 5);
         attackAnimation = new AnimationHandler("d:/Visual/RPG/src/texture/ATTACK 1.png", 96, 96, 1, 7, 5);
@@ -129,13 +129,13 @@ public class BattleCanvas extends JPanel implements KeyListener {
     @Override
     public void keyReleased(KeyEvent e) {
         switch (e.getKeyCode()) {
-            case KeyEvent.VK_A -> movingLeft = false; // Остановить движение влево
-            case KeyEvent.VK_D -> movingRight = false; // Остановить движение вправо
+            case KeyEvent.VK_A -> movingLeft = false; 
+            case KeyEvent.VK_D -> movingRight = false; 
             case KeyEvent.VK_SPACE -> {
                 new Timer(500,
                 evt -> { // 500ms delay for response attack
-                    attacking = false; // Остановить атаку
-                    currentAnimation = idleAnimation; // Вернуться к анимации ожидания
+                    attacking = false; 
+                    currentAnimation = idleAnimation; 
                     ((Timer) evt.getSource()).stop();
                 }).start();
             }
@@ -144,7 +144,7 @@ public class BattleCanvas extends JPanel implements KeyListener {
 
     private void showWinner(Player winner) {
         JOptionPane.showMessageDialog(this, "🏆 Winner: " + winner.getName());
-        System.exit(0); // Завершение игры
+        System.exit(0); 
     }
 
     @Override public void keyTyped(KeyEvent e) {}
