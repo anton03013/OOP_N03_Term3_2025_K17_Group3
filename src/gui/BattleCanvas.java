@@ -10,7 +10,7 @@ import java.awt.event.*;
 public class BattleCanvas extends JPanel implements KeyListener {
     private Player p1;
     private Warrior p2;
-
+    private boolean facingRight = true;
     private int p1X = 50;
     private int p2X = 300;
     private int p1Y;
@@ -30,14 +30,14 @@ public class BattleCanvas extends JPanel implements KeyListener {
     public BattleCanvas() {
         setFocusable(true);
         addKeyListener(this);
-        p1 = new Player("Quang_Pro", 100, 15);
+        p1 = new Player("", 100, 15);
         p2 = new Warrior("Grom", 100, 20);
         p1Y = groundY;
 
         // Animations
-        idleAnimation = new AnimationHandler("d:/Visual/RPG/src/texture/IDLE.png", 96, 96, 1, 10, 5);
-        runAnimation = new AnimationHandler("d:/Visual/RPG/src/texture/RUN.png", 96, 96, 1, 16, 5);
-        attackAnimation = new AnimationHandler("d:/Visual/RPG/src/texture/ATTACK 1.png", 96, 96, 1, 7, 5);
+        idleAnimation = new AnimationHandler("D:/java/Gameeeeee/src/texture/IDLE.png", 96, 96, 1, 10, 5);
+        runAnimation = new AnimationHandler("D:/java/Gameeeeee/src/texture/RUN.png", 96, 96, 1, 16, 5);
+        attackAnimation = new AnimationHandler("src/texture/ATTACK 1.png", 96, 96, 1, 7, 5);
         currentAnimation = idleAnimation; //Default animation
 
         Timer gameLoop = new Timer(16, e -> {
@@ -53,13 +53,13 @@ public class BattleCanvas extends JPanel implements KeyListener {
 
             // Updateint animation based on player state
             if (movingLeft || movingRight) {
-                currentAnimation = runAnimation; // 
-            }   
+                currentAnimation = runAnimation; //
+            }
             else if (attacking) {
-                currentAnimation = attackAnimation; // 
-            } 
+                currentAnimation = attackAnimation; //
+            }
             else {
-                currentAnimation = idleAnimation; // 
+                currentAnimation = idleAnimation; //
             }
 
             if (movingLeft) {
@@ -69,7 +69,7 @@ public class BattleCanvas extends JPanel implements KeyListener {
                 p1X = Math.min(getWidth() - 40, p1X + 5); // Speed of right movement
             }
 
-            currentAnimation.update(); 
+            currentAnimation.update();
             repaint();
         });
         gameLoop.start();
@@ -84,7 +84,8 @@ public class BattleCanvas extends JPanel implements KeyListener {
         g.fillRect(0, groundY, getWidth(), 5);
 
         // Player 1
-        currentAnimation.draw(g, p1X, p1Y - 80); // Current animation
+        currentAnimation.draw(g, p1X, p1Y - 80, facingRight);
+
         g.drawString(p1.getName() + " HP: " + p1.getHealth(), p1X, p1Y - 60);
 
         // Player 2
@@ -98,8 +99,14 @@ public class BattleCanvas extends JPanel implements KeyListener {
         if (!p1.isAlive() || !p2.isAlive()) return;
 
         switch (e.getKeyCode()) {
-            case KeyEvent.VK_A -> movingLeft = true; 
-            case KeyEvent.VK_D -> movingRight = true; 
+            case KeyEvent.VK_A -> {
+                movingLeft = true;
+                facingRight = false;
+            }
+            case KeyEvent.VK_D -> {
+                movingRight = true;
+                facingRight = true;
+            }
             case KeyEvent.VK_W -> {
                 if (!jumping) {
                     jumping = true;
@@ -107,7 +114,7 @@ public class BattleCanvas extends JPanel implements KeyListener {
                 }
             }
             case KeyEvent.VK_SPACE ->{
-                attacking = true; 
+                attacking = true;
                 if (Math.abs(p1X - p2X) < 100) { // Distance check for attack
                     p1.attack(p2);
                     if (!p2.isAlive()) {
@@ -123,28 +130,29 @@ public class BattleCanvas extends JPanel implements KeyListener {
                     }).start();
                 }
             }
+
         }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
         switch (e.getKeyCode()) {
-            case KeyEvent.VK_A -> movingLeft = false; 
-            case KeyEvent.VK_D -> movingRight = false; 
+            case KeyEvent.VK_A -> movingLeft = false;
+            case KeyEvent.VK_D -> movingRight = false;
             case KeyEvent.VK_SPACE -> {
                 new Timer(500,
-                evt -> { // 500ms delay for response attack
-                    attacking = false; 
-                    currentAnimation = idleAnimation; 
-                    ((Timer) evt.getSource()).stop();
-                }).start();
+                        evt -> { // 500ms delay for response attack
+                            attacking = false;
+                            currentAnimation = idleAnimation;
+                            ((Timer) evt.getSource()).stop();
+                        }).start();
             }
         }
     }
 
     private void showWinner(Player winner) {
         JOptionPane.showMessageDialog(this, "🏆 Winner: " + winner.getName());
-        System.exit(0); 
+        System.exit(0);
     }
 
     @Override public void keyTyped(KeyEvent e) {}
