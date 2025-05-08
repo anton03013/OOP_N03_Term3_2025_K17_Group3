@@ -1,3 +1,4 @@
+
 package texture;
 
 import java.awt.*;
@@ -6,12 +7,14 @@ import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
 
-public class AnimationHandler {
+public class  AnimationHandler {
     private BufferedImage spriteSheet;
     private int frameWidth, frameHeight;
     private int rows, cols;
     private int currentFrame = 0;
     private int frameDelay, frameCounter = 0;
+    private boolean facingRight = true;
+
 
     public AnimationHandler(String filePath, int frameWidth, int frameHeight, int rows, int cols, int frameDelay) {
         try {
@@ -34,10 +37,19 @@ public class AnimationHandler {
         }
     }
 
-    public void draw(Graphics g, int x, int y) {
-        int frameX = (currentFrame % cols) * frameWidth; // X coordinate
-        int frameY = (currentFrame / cols) * frameHeight; // Y coordinate
-        g.drawImage(spriteSheet, x, y, x + frameWidth, y + frameHeight,
+    public void draw(Graphics g, int x, int y, boolean facingRight) {
+        int frameX = (currentFrame % cols) * frameWidth;
+        int frameY = (currentFrame / cols) * frameHeight;
+
+        Graphics2D g2d = (Graphics2D) g;
+
+        if (facingRight) {
+            g2d.drawImage(spriteSheet, x, y, x + frameWidth, y + frameHeight,
                     frameX, frameY, frameX + frameWidth, frameY + frameHeight, null);
+        } else {
+            // Draw flipped horizontally
+            g2d.drawImage(spriteSheet, x + frameWidth, y, x, y + frameHeight,
+                    frameX, frameY, frameX + frameWidth, frameY + frameHeight, null);
+        }
     }
 }
