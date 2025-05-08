@@ -30,7 +30,7 @@ public class BattleCanvas extends JPanel implements KeyListener {
     public BattleCanvas() {
         setFocusable(true);
         addKeyListener(this);
-        p1 = new Player("Anthoni", 100, 15);
+        p1 = new Player("Quang_Pro", 100, 15);
         p2 = new Warrior("Grom", 100, 20);
         p1Y = groundY;
 
