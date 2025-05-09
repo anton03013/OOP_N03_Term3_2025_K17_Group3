@@ -31,8 +31,7 @@ Chào mừng bạn đến với **Platformer RPG 2D**, một trò chơi nhập v
   - 3 Trần Đình Dũng
        
 ## 🏆 Cải Tiến Trong Tương Lai
-  - Thêm các lớp nhân vật mới (ví dụ: Pháp Sư, Cung Thủ).
-  - Triển khai chế độ chơi nhiều người.
+  - Thêm các lớp nhân vật mới (ví dụ: Pháp Sư, Cung Thủ)..
   - Giới thiệu các cấp độ và kẻ thù mới.
   - Nâng cấp đồ họa với các hiệu ứng hoạt hình.
    git clone https://github.com/your-username/platformer-rpg-2d.git
