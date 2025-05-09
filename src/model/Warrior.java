@@ -6,7 +6,7 @@ public class Warrior extends Player {
     private int strength;
 
     public Warrior(String name, int health, int strength) {
-        super(name, health, strength); // Передаём strength в Player
+        super(name, health, strength); 
         this.strength = strength;
     }
 

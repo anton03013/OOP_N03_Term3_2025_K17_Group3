@@ -35,9 +35,9 @@ public class BattleCanvas extends JPanel implements KeyListener {
         p1Y = groundY;
 
         // Animations
-        idleAnimation = new AnimationHandler("D:/java/Gameeeeee/src/texture/IDLE.png", 96, 96, 1, 10, 5);
-        runAnimation = new AnimationHandler("D:/java/Gameeeeee/src/texture/RUN.png", 96, 96, 1, 16, 5);
-        attackAnimation = new AnimationHandler("src/texture/ATTACK 1.png", 96, 96, 1, 7, 5);
+        idleAnimation = new AnimationHandler("src/texture/IDLE.png", 96, 96, 1, 10, 7);
+        runAnimation = new AnimationHandler("src/texture/RUN.png", 96, 96, 1, 16, 6);
+        attackAnimation = new AnimationHandler("src/texture/ATTACK 1.png", 96, 96, 1, 7, 3);
         currentAnimation = idleAnimation; //Default animation
 
         Timer gameLoop = new Timer(16, e -> {
@@ -140,7 +140,7 @@ public class BattleCanvas extends JPanel implements KeyListener {
             case KeyEvent.VK_A -> movingLeft = false;
             case KeyEvent.VK_D -> movingRight = false;
             case KeyEvent.VK_SPACE -> {
-                new Timer(500,
+                new Timer(300,
                         evt -> { // 500ms delay for response attack
                             attacking = false;
                             currentAnimation = idleAnimation;
