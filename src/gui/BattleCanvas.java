@@ -20,10 +20,12 @@ public class BattleCanvas extends JPanel implements KeyListener {
 
     private boolean movingLeft = false;
     private boolean movingRight = false;
-    private boolean attacking = false;
-    private boolean hurt = false;
+    private boolean p1Hurt = false;
+    private boolean p2Hurt = false;
+    private boolean attacking = false; // Added attacking variable
 
-    private AnimationHandler currentAnimation;
+    private AnimationHandler p1CurrentAnimation;
+    private AnimationHandler p2CurrentAnimation;
     private AnimationHandler idleAnimation;
     private AnimationHandler runAnimation;
     private AnimationHandler attackAnimation;
@@ -41,8 +43,8 @@ public class BattleCanvas extends JPanel implements KeyListener {
         runAnimation = new AnimationHandler("src/texture/RUN.png", 96, 96, 1, 16, 6);
         attackAnimation = new AnimationHandler("src/texture/ATTACK 1.png", 96, 96, 1, 7, 3);
         hurtAnimation = new AnimationHandler("src/texture/HURT.png", 96, 96, 1, 4, 5); // HURT animation
-        currentAnimation = idleAnimation; // Default animation
-
+        p1CurrentAnimation = idleAnimation; // Default animation for Player 1
+        p2CurrentAnimation = idleAnimation; // Default animation for Player 2
         Timer gameLoop = new Timer(16, e -> {
             if (jumping) {
                 p1Y += velocityY;
@@ -54,15 +56,19 @@ public class BattleCanvas extends JPanel implements KeyListener {
                 }
             }
 
-            // Update animation based on player state
-            if (hurt) {
-                currentAnimation = hurtAnimation;
+            // Update animations based on player states
+            if (p1Hurt) {
+                p1CurrentAnimation = hurtAnimation;
             } else if (movingLeft || movingRight) {
-                currentAnimation = runAnimation;
-            } else if (attacking) {
-                currentAnimation = attackAnimation;
+                p1CurrentAnimation = runAnimation;
             } else {
-                currentAnimation = idleAnimation;
+                p1CurrentAnimation = idleAnimation;
+            }
+
+            if (p2Hurt) {
+                p2CurrentAnimation = hurtAnimation;
+            } else {
+                p2CurrentAnimation = idleAnimation;
             }
 
             if (movingLeft) {
@@ -72,11 +78,13 @@ public class BattleCanvas extends JPanel implements KeyListener {
                 p1X = Math.min(getWidth() - 40, p1X + 5); // Speed of right movement
             }
 
-            currentAnimation.update();
-            repaint();
-        });
-        gameLoop.start();
-    }
+            p1CurrentAnimation.update();
+                p1CurrentAnimation.update();
+                p2CurrentAnimation.update();
+                repaint();
+            });
+            gameLoop.start();
+        }
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -87,13 +95,11 @@ public class BattleCanvas extends JPanel implements KeyListener {
         g.fillRect(0, groundY, getWidth(), 5);
 
         // Player 1
-        currentAnimation.draw(g, p1X, p1Y - 80, facingRight);
-
+        p1CurrentAnimation.draw(g, p1X, p1Y - 80, facingRight);
         g.drawString(p1.getName() + " HP: " + p1.getHealth(), p1X, p1Y - 60);
 
         // Player 2
-        g.setColor(Color.RED);
-        g.fillRect(p2X, groundY - 60, 60, 60);
+        p2CurrentAnimation.draw(g, p2X, groundY - 80, false);
         g.drawString(p2.getName() + " HP: " + p2.getHealth(), p2X, groundY - 70);
     }
 
@@ -117,23 +123,40 @@ public class BattleCanvas extends JPanel implements KeyListener {
                 }
             }
             case KeyEvent.VK_SPACE -> {
+                if (attacking) return; // Prevent spamming attacks
                 attacking = true;
+                p1CurrentAnimation = attackAnimation;
+
                 if (Math.abs(p1X - p2X) < 100) { // Distance check for attack
                     p1.attack(p2);
                     if (!p2.isAlive()) {
                         showWinner(p1);
                         return;
                     }
-                    hurt = true; // Trigger hurt animation
+                    p2Hurt = true; // Trigger hurt animation for Player 2
                     new Timer(500, evt -> { // 500ms delay for response attack
-                        hurt = false; // End hurt animation
+                        p2Hurt = false; // End hurt animation for Player 2
                         if (Math.abs(p1X - p2X) < 60) {
                             p2.attack(p1);
-                            if (!p1.isAlive()) showWinner(p2);
+                            if (!p1.isAlive()) {
+                                showWinner(p2);
+                                return;
+                            }
+                            p1Hurt = true; // Trigger hurt animation for Player 1
+                            new Timer(500, evt2 -> {
+                                p1Hurt = false; // End hurt animation for Player 1
+                                ((Timer) evt2.getSource()).stop();
+                            }).start();
                         }
                         ((Timer) evt.getSource()).stop();
                     }).start();
                 }
+
+                new Timer(300, evt -> { // 300ms delay for ending attack animation
+                    attacking = false;
+                    p1CurrentAnimation = idleAnimation;
+                    ((Timer) evt.getSource()).stop();
+                }).start();
             }
         }
     }
@@ -143,14 +166,6 @@ public class BattleCanvas extends JPanel implements KeyListener {
         switch (e.getKeyCode()) {
             case KeyEvent.VK_A -> movingLeft = false;
             case KeyEvent.VK_D -> movingRight = false;
-            case KeyEvent.VK_SPACE -> {
-                new Timer(300,
-                        evt -> { // 300ms delay for ending attack animation
-                            attacking = false;
-                            currentAnimation = idleAnimation;
-                            ((Timer) evt.getSource()).stop();
-                        }).start();
-            }
         }
     }
 

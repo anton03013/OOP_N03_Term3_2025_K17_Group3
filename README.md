@@ -31,11 +31,8 @@ Chào mừng bạn đến với **Platformer RPG 2D**, một trò chơi nhập v
   - 3 Trần Đình Dũng
        
 ## 🏆 Cải Tiến Trong Tương Lai
-<<<<<<< HEAD
   - Thêm các lớp nhân vật mới (ví dụ: Pháp Sư, Cung Thủ)..
-=======
   - Thêm các lớp nhân vật mới (ví dụ: Pháp Sư, Cung Thủ).
->>>>>>> main
   - Giới thiệu các cấp độ và kẻ thù mới.
   - Nâng cấp đồ họa với các hiệu ứng hoạt hình.
 
