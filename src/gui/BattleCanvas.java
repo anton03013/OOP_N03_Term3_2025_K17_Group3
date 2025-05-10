@@ -22,7 +22,7 @@ public class BattleCanvas extends JPanel implements KeyListener {
     private boolean movingRight = false;
     private boolean p1Hurt = false;
     private boolean p2Hurt = false;
-    private boolean attacking = false; // Added attacking variable
+    private boolean attacking = false;
 
     private AnimationHandler p1CurrentAnimation;
     private AnimationHandler p2CurrentAnimation;
@@ -45,6 +45,7 @@ public class BattleCanvas extends JPanel implements KeyListener {
         hurtAnimation = new AnimationHandler("src/texture/HURT.png", 96, 96, 1, 4, 5); // HURT animation
         p1CurrentAnimation = idleAnimation; // Default animation for Player 1
         p2CurrentAnimation = idleAnimation; // Default animation for Player 2
+
         Timer gameLoop = new Timer(16, e -> {
             if (jumping) {
                 p1Y += velocityY;
@@ -59,6 +60,8 @@ public class BattleCanvas extends JPanel implements KeyListener {
             // Update animations based on player states
             if (p1Hurt) {
                 p1CurrentAnimation = hurtAnimation;
+            } else if (attacking) {
+                p1CurrentAnimation = attackAnimation;
             } else if (movingLeft || movingRight) {
                 p1CurrentAnimation = runAnimation;
             } else {
@@ -79,12 +82,11 @@ public class BattleCanvas extends JPanel implements KeyListener {
             }
 
             p1CurrentAnimation.update();
-                p1CurrentAnimation.update();
-                p2CurrentAnimation.update();
-                repaint();
-            });
-            gameLoop.start();
-        }
+            p2CurrentAnimation.update();
+            repaint();
+        });
+        gameLoop.start();
+    }
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -152,7 +154,7 @@ public class BattleCanvas extends JPanel implements KeyListener {
                     }).start();
                 }
 
-                new Timer(300, evt -> { // 300ms delay for ending attack animation
+                new Timer(500, evt -> { // Ensure attack animation plays fully
                     attacking = false;
                     p1CurrentAnimation = idleAnimation;
                     ((Timer) evt.getSource()).stop();
