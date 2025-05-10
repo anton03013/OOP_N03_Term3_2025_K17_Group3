@@ -21,24 +21,27 @@ public class BattleCanvas extends JPanel implements KeyListener {
     private boolean movingLeft = false;
     private boolean movingRight = false;
     private boolean attacking = false;
+    private boolean hurt = false;
 
     private AnimationHandler currentAnimation;
     private AnimationHandler idleAnimation;
     private AnimationHandler runAnimation;
     private AnimationHandler attackAnimation;
+    private AnimationHandler hurtAnimation;
 
     public BattleCanvas() {
         setFocusable(true);
         addKeyListener(this);
-        p1 = new Player("", 100, 15);
+        p1 = new Player("Knight", 100, 15);
         p2 = new Warrior("Grom", 100, 20);
         p1Y = groundY;
 
         // Animations
-        idleAnimation = new AnimationHandler("D:/java/Gameeeeee/src/texture/IDLE.png", 96, 96, 1, 10, 5);
-        runAnimation = new AnimationHandler("D:/java/Gameeeeee/src/texture/RUN.png", 96, 96, 1, 16, 5);
-        attackAnimation = new AnimationHandler("src/texture/ATTACK 1.png", 96, 96, 1, 7, 5);
-        currentAnimation = idleAnimation; //Default animation
+        idleAnimation = new AnimationHandler("src/texture/IDLE.png", 96, 96, 1, 10, 7);
+        runAnimation = new AnimationHandler("src/texture/RUN.png", 96, 96, 1, 16, 6);
+        attackAnimation = new AnimationHandler("src/texture/ATTACK 1.png", 96, 96, 1, 7, 3);
+        hurtAnimation = new AnimationHandler("src/texture/HURT.png", 96, 96, 1, 4, 5); // HURT animation
+        currentAnimation = idleAnimation; // Default animation
 
         Timer gameLoop = new Timer(16, e -> {
             if (jumping) {
@@ -51,15 +54,15 @@ public class BattleCanvas extends JPanel implements KeyListener {
                 }
             }
 
-            // Updateint animation based on player state
-            if (movingLeft || movingRight) {
-                currentAnimation = runAnimation; //
-            }
-            else if (attacking) {
-                currentAnimation = attackAnimation; //
-            }
-            else {
-                currentAnimation = idleAnimation; //
+            // Update animation based on player state
+            if (hurt) {
+                currentAnimation = hurtAnimation;
+            } else if (movingLeft || movingRight) {
+                currentAnimation = runAnimation;
+            } else if (attacking) {
+                currentAnimation = attackAnimation;
+            } else {
+                currentAnimation = idleAnimation;
             }
 
             if (movingLeft) {
@@ -113,7 +116,7 @@ public class BattleCanvas extends JPanel implements KeyListener {
                     velocityY = -15;
                 }
             }
-            case KeyEvent.VK_SPACE ->{
+            case KeyEvent.VK_SPACE -> {
                 attacking = true;
                 if (Math.abs(p1X - p2X) < 100) { // Distance check for attack
                     p1.attack(p2);
@@ -121,7 +124,9 @@ public class BattleCanvas extends JPanel implements KeyListener {
                         showWinner(p1);
                         return;
                     }
+                    hurt = true; // Trigger hurt animation
                     new Timer(500, evt -> { // 500ms delay for response attack
+                        hurt = false; // End hurt animation
                         if (Math.abs(p1X - p2X) < 60) {
                             p2.attack(p1);
                             if (!p1.isAlive()) showWinner(p2);
@@ -130,7 +135,6 @@ public class BattleCanvas extends JPanel implements KeyListener {
                     }).start();
                 }
             }
-
         }
     }
 
@@ -140,8 +144,8 @@ public class BattleCanvas extends JPanel implements KeyListener {
             case KeyEvent.VK_A -> movingLeft = false;
             case KeyEvent.VK_D -> movingRight = false;
             case KeyEvent.VK_SPACE -> {
-                new Timer(500,
-                        evt -> { // 500ms delay for response attack
+                new Timer(300,
+                        evt -> { // 300ms delay for ending attack animation
                             attacking = false;
                             currentAnimation = idleAnimation;
                             ((Timer) evt.getSource()).stop();
