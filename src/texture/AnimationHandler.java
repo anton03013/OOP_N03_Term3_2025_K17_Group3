@@ -13,7 +13,7 @@ public class  AnimationHandler {
     private int rows, cols;
     private int currentFrame = 0;
     private int frameDelay, frameCounter = 0;
-    private double scale = 2.0; // Scale factor for the image
+    private boolean facingRight = true;
 
 
     public AnimationHandler(String filePath, int frameWidth, int frameHeight, int rows, int cols, int frameDelay) {
@@ -43,15 +43,12 @@ public class  AnimationHandler {
 
         Graphics2D g2d = (Graphics2D) g;
 
-        int scaledWidth = (int) (frameWidth  * scale);
-        int scaledHeight = (int) (frameHeight * scale);
-
         if (facingRight) {
-            g2d.drawImage(spriteSheet, x, y, x + scaledWidth, y + scaledHeight,
+            g2d.drawImage(spriteSheet, x, y, x + frameWidth, y + frameHeight,
                     frameX, frameY, frameX + frameWidth, frameY + frameHeight, null);
         } else {
             // Draw flipped horizontally
-            g2d.drawImage(spriteSheet, x + scaledWidth, y, x, y + scaledHeight,
+            g2d.drawImage(spriteSheet, x + frameWidth, y, x, y + frameHeight,
                     frameX, frameY, frameX + frameWidth, frameY + frameHeight, null);
         }
     }
