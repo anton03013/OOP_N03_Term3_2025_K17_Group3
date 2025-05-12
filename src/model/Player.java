@@ -22,10 +22,6 @@ public class Player {
         this.health = Math.max(0, health);
     }
 
-    public void setStrength(int strength) { 
-        this.strength = Math.max(0, strength);
-    }
-
     public void takeDamage(int damage) {
         setHealth(health - damage);
     }
