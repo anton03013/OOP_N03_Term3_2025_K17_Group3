@@ -34,7 +34,7 @@ public class BattleCanvas extends JPanel implements KeyListener {
     public BattleCanvas() {
         setFocusable(true);
         addKeyListener(this);
-        p1 = new Player("", 100, 15);
+        p1 = new Player("John", 100, 15);
         p2 = new Warrior("Grom", 100, 20);
         p1Y = groundY;
 
@@ -129,7 +129,7 @@ public class BattleCanvas extends JPanel implements KeyListener {
                 attacking = true;
                 p1CurrentAnimation = attackAnimation;
 
-                if (Math.abs(p1X - p2X) < 100) { // Distance check for attack
+                if (Math.abs(p1X - p2X) < 60) { // Distance check for attack
                     p1.attack(p2);
                     if (!p2.isAlive()) {
                         showWinner(p1);
