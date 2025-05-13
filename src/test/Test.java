@@ -1,12 +1,12 @@
 package test;
 
-import model.Warrior;
-import model.Player;
+import Classes.Enemies;
+import Classes.Player;
 
 public class Test {
     public static void main(String[] args) {
         Player Zeros = new Player("Zeros", 250, 30);
-        Warrior Sen = new Warrior("Sen", 50, 50);
+        Enemies Sen = new Enemies("Sen", 50, 50);
     
         Player[] players = {Zeros, Sen};
         for (Player player : players) {

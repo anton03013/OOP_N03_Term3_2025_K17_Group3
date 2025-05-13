@@ -1,11 +1,11 @@
-package model;
+package Classes;
 
 import java.util.Random;
 
-public class Warrior extends Player {
+public class Enemies extends Player {
     private int strength;
 
-    public Warrior(String name, int health, int strength) {
+    public Enemies(String name, int health, int strength) {
         super(name, health, strength); 
         this.strength = strength;
     }

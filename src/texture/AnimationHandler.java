@@ -13,7 +13,7 @@ public class  AnimationHandler {
     private int rows, cols;
     private int currentFrame = 0;
     private int frameDelay, frameCounter = 0;
-    private boolean facingRight = true;
+
 
 
     public AnimationHandler(String filePath, int frameWidth, int frameHeight, int rows, int cols, int frameDelay) {
@@ -52,4 +52,8 @@ public class  AnimationHandler {
                     frameX, frameY, frameX + frameWidth, frameY + frameHeight, null);
         }
     }
+    public int getWidth() {
+        return frameWidth;
+    }
+
 }
