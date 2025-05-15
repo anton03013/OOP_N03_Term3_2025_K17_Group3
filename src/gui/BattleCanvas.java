@@ -136,7 +136,7 @@ public class BattleCanvas extends JPanel implements KeyListener {
                 }
             }
             case KeyEvent.VK_SPACE -> {
-                if (attacking) return; // Prevent spamming attacks or starting attack mid-animation
+                if (attacking) return; 
                 attacking = true;
                 p1CurrentAnimation = attackAnimation;
 
@@ -147,8 +147,8 @@ public class BattleCanvas extends JPanel implements KeyListener {
                         return;
                     }
                     e1Hurt = true; // Trigger hurt animation for Player 2
-                    new Timer(500, evt -> { // 500ms delay for response attack
-                        e1Hurt = false; // End hurt animation for Player 2
+                    new Timer(500, evt -> { 
+                        e1Hurt = false; 
                         if (Math.abs(p1X - p2X) < (p1Width + p2Width) / 4) {
                             e1.attack(p1);
                             if (!p1.isAlive()) {
@@ -157,7 +157,7 @@ public class BattleCanvas extends JPanel implements KeyListener {
                             }
                             p1Hurt = true; // Trigger hurt animation for Player 1
                             new Timer(500, evt2 -> {
-                                p1Hurt = false; // End hurt animation for Player 1
+                                p1Hurt = false; 
                                 ((Timer) evt2.getSource()).stop();
                             }).start();
                         }
