@@ -55,5 +55,8 @@ public class  AnimationHandler {
     public int getWidth() {
         return frameWidth;
     }
+    public int getHeight() {
+        return frameHeight;
+    }
 
 }

@@ -37,6 +37,8 @@ public class BattleCanvas extends JPanel implements KeyListener {
     private AnimationHandler attackAnimation;
     private AnimationHandler hurtAnimation;
     private AnimationHandler jumpAnimation;
+    private AnimationHandler necromanceridle;
+    private AnimationHandler necromancerhurt;
 
     private List<Platforms> platforms = new ArrayList<>();
 
@@ -48,6 +50,8 @@ public class BattleCanvas extends JPanel implements KeyListener {
         p1Y = groundY;
         
         // Animations
+        necromancerhurt = new AnimationHandler("src/texture/Necromancer/Necromancer_hurt.png", 160, 70, 1, 5, 5);
+        necromanceridle = new AnimationHandler("src/texture/Nightborne/death.png", 80, 80, 1, 23, 8);
         idleAnimation = new AnimationHandler("src/texture/Sprites/Idle.png", 180, 180, 1, 11, 10);
         runAnimation = new AnimationHandler("src/texture/Sprites/Run.png", 180, 180, 1, 8, 6);
         attackAnimation = new AnimationHandler("src/texture/Sprites/Attack1.png", 180, 180, 1, 7, 5);
@@ -87,9 +91,9 @@ public class BattleCanvas extends JPanel implements KeyListener {
             }
 
             if (e1Hurt) {
-                p2CurrentAnimation = hurtAnimation;
+                p2CurrentAnimation = necromancerhurt;
             } else {
-                p2CurrentAnimation = idleAnimation;
+                p2CurrentAnimation = necromanceridle;
             }
 
             if (movingLeft) {
@@ -101,10 +105,14 @@ public class BattleCanvas extends JPanel implements KeyListener {
 
             boolean onPlatform = false;
             for (Platforms platform : platforms) {
-                // Проверяем, находится ли персонаж на платформе (простая проверка по X и Y)
+                // Проверяем горизонтальное пересечение
                 if (p1X + p1Width > platform.getX() && p1X < platform.getX() + platform.getWidth()) {
-                    if (p1Y + 1 >= platform.getY() && p1Y + 1 <= platform.getY() + platform.getHeight()) {
-                        p1Y = platform.getY() - 1;
+                    // Проверяем, что персонаж падает и находится над платформой
+                    int playerFeet = p1Y + p1CurrentAnimation.getHeight() - 175; // 80 - поправка под вашу отрисовку
+                    if (velocityY >= 0 // только если падает
+                        && playerFeet <= platform.getY() // был выше платформы
+                        && playerFeet + velocityY >= platform.getY()) { // после движения окажется на платформе
+                        p1Y = platform.getY() - (p1CurrentAnimation.getHeight() - 175);
                         jumping = false;
                         velocityY = 0;
                         onPlatform = true;
