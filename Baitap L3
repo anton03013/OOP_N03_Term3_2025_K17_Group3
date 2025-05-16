@@ -4,10 +4,10 @@ public class Fact {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         System.out.print("nhap n: ");
-        long n = scanner.nextLong();
+        int n = scanner.nextLong();
         System.out.println(fac(n));
     }
-    public static long fac(long n) {
+    public static long fac(int n) {
         if (n<=1) {
             return 1;
         } else {
