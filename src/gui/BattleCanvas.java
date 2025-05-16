@@ -8,6 +8,8 @@ import Classes.*;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BattleCanvas extends JPanel implements KeyListener {
     private Player p1;
@@ -16,7 +18,7 @@ public class BattleCanvas extends JPanel implements KeyListener {
     private int p1X = 50;
     private int p2X = 300;
     private int p1Y;
-    private final int groundY = 200;
+    private int groundY; 
     private boolean jumping = false;
     private int velocityY = 0;
 
@@ -36,6 +38,8 @@ public class BattleCanvas extends JPanel implements KeyListener {
     private AnimationHandler hurtAnimation;
     private AnimationHandler jumpAnimation;
 
+    private List<Platforms> platforms = new ArrayList<>();
+
     public BattleCanvas() {
         setFocusable(true);
         addKeyListener(this);
@@ -43,7 +47,6 @@ public class BattleCanvas extends JPanel implements KeyListener {
         e1 = new Enemies("Grom", 100, 20);
         p1Y = groundY;
         
-
         // Animations
         idleAnimation = new AnimationHandler("src/texture/Sprites/Idle.png", 180, 180, 1, 11, 10);
         runAnimation = new AnimationHandler("src/texture/Sprites/Run.png", 180, 180, 1, 8, 6);
@@ -55,6 +58,10 @@ public class BattleCanvas extends JPanel implements KeyListener {
         p1Width = idleAnimation.getWidth();
         p2Width = idleAnimation.getWidth();
 
+        //Platforms
+        platforms.add(new Platforms(200, 600, 150, 10));
+        platforms.add(new Platforms(500, 500, 150, 10));
+        // Game loop
         Timer gameLoop = new Timer(16, e -> {
             if (jumping) {
                 p1Y += velocityY;
@@ -92,6 +99,27 @@ public class BattleCanvas extends JPanel implements KeyListener {
                 p1X = Math.min(getWidth() - 40, p1X + 5); // Speed of right movement
             }
 
+            boolean onPlatform = false;
+            for (Platforms platform : platforms) {
+                // Проверяем, находится ли персонаж на платформе (простая проверка по X и Y)
+                if (p1X + p1Width > platform.getX() && p1X < platform.getX() + platform.getWidth()) {
+                    if (p1Y + 1 >= platform.getY() && p1Y + 1 <= platform.getY() + platform.getHeight()) {
+                        p1Y = platform.getY() - 1;
+                        jumping = false;
+                        velocityY = 0;
+                        onPlatform = true;
+                        break;
+                    }
+                }
+            }
+            if (!onPlatform && p1Y < groundY) {
+                jumping = true;
+            } else if (!onPlatform && p1Y >= groundY) {
+                p1Y = groundY;
+                jumping = false;
+                velocityY = 0;
+            }
+
             p1CurrentAnimation.update();
             p2CurrentAnimation.update();
             repaint();
@@ -103,12 +131,22 @@ public class BattleCanvas extends JPanel implements KeyListener {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        // Line
+        groundY = getHeight() - 100; // Adjust ground level based on window height
+        // Ground
         g.setColor(Color.GRAY);
-        g.fillRect(0, groundY + 300, getWidth(), 5);
+        g.fillRect(0, groundY + 30 , getWidth(), 5);
+
+        // Platforms
+        for (Platforms platform : platforms) {
+            
+            platform.draw(g);
+        }
 
         // Player 1
-        p1CurrentAnimation.draw(g, p1X, p1Y - 60, facingRight);
+        if (p1Y == 0 || p1Y > groundY) {
+        p1Y = groundY;
+        }
+        p1CurrentAnimation.draw(g, p1X, p1Y - 80, facingRight);
         g.drawString(p1.getName() + " HP: " + p1.getHealth(), p1X, p1Y - 60);
 
         // Player 2
@@ -132,7 +170,7 @@ public class BattleCanvas extends JPanel implements KeyListener {
             case KeyEvent.VK_W -> {
                 if (!jumping) {
                     jumping = true;
-                    velocityY = -10;
+                    velocityY = -20;
                 }
             }
             case KeyEvent.VK_SPACE -> {
