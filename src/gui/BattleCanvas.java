@@ -37,26 +37,22 @@ public class BattleCanvas extends JPanel implements KeyListener {
     private AnimationHandler attackAnimation;
     private AnimationHandler hurtAnimation;
     private AnimationHandler jumpAnimation;
-    private AnimationHandler necromanceridle;
-    private AnimationHandler necromancerhurt;
 
     private List<Platforms> platforms = new ArrayList<>();
 
     public BattleCanvas() {
         setFocusable(true);
         addKeyListener(this);
-        p1 = new Player("Ichigay", 100, 55);
+        p1 = new Player("John", 100, 15);
         e1 = new Enemies("Grom", 100, 20);
         p1Y = groundY;
 
         // Animations
-        necromancerhurt = new AnimationHandler("src/texture/Necromancer/Necromancer_hurt.png", 160, 70, 1, 5, 5);
-        necromanceridle = new AnimationHandler("src/texture/Nightborne/death.png", 80, 80, 1, 23, 8);
-        idleAnimation = new AnimationHandler("src/texture/Sprites/Idle.png", 180, 180, 1, 11, 10);
-        runAnimation = new AnimationHandler("src/texture/Sprites/Run.png", 180, 180, 1, 8, 6);
-        attackAnimation = new AnimationHandler("src/texture/Sprites/Attack1.png", 180, 180, 1, 7, 5);
+        idleAnimation = new AnimationHandler("src/texture/Sprites/Idle1.png", 205, 114, 1, 3, 12);
+        runAnimation = new AnimationHandler("src/texture/Sprites/runner.png", 215, 101, 1, 5, 3);
+        attackAnimation = new AnimationHandler("src/texture/Sprites/ATKfinal.png", 208, 108, 1, 8, 4);
         hurtAnimation = new AnimationHandler("src/texture/Sprites/Take Hit.png", 180, 180, 1, 4, 5);
-        jumpAnimation = new AnimationHandler("src/texture/Sprites/JUMP1.png", 190, 100, 1, 3, 10);
+        jumpAnimation = new AnimationHandler("src/texture/Sprites/JUMP1.png", 200, 100, 1, 3, 5);
         p1CurrentAnimation = idleAnimation; // Default animation for Player 1
         p2CurrentAnimation = idleAnimation; // Default animation for Player 2
         p1Width = idleAnimation.getWidth();
@@ -91,28 +87,24 @@ public class BattleCanvas extends JPanel implements KeyListener {
             }
 
             if (e1Hurt) {
-                p2CurrentAnimation = necromancerhurt;
+                p2CurrentAnimation = hurtAnimation;
             } else {
-                p2CurrentAnimation = necromanceridle;
+                p2CurrentAnimation = idleAnimation;
             }
 
             if (movingLeft) {
-                p1X = Math.max(0, p1X - 8); // Speed of left movement
+                p1X = Math.max(0, p1X - 5); // Speed of left movement
             }
             if (movingRight) {
-                p1X = Math.min(getWidth() - 40, p1X + 8); // Speed of right movement
+                p1X = Math.min(getWidth() - 40, p1X + 5); // Speed of right movement
             }
 
             boolean onPlatform = false;
             for (Platforms platform : platforms) {
-                // Проверяем горизонтальное пересечение
+                // Проверяем, находится ли персонаж на платформе (простая проверка по X и Y)
                 if (p1X + p1Width > platform.getX() && p1X < platform.getX() + platform.getWidth()) {
-                    // Проверяем, что персонаж падает и находится над платформой
-                    int playerFeet = p1Y + p1CurrentAnimation.getHeight() - 175; // 80 - поправка под вашу отрисовку
-                    if (velocityY >= 0 // только если падает
-                        && playerFeet <= platform.getY() // был выше платформы
-                        && playerFeet + velocityY >= platform.getY()) { // после движения окажется на платформе
-                        p1Y = platform.getY() - (p1CurrentAnimation.getHeight() - 175);
+                    if (p1Y + 1 >= platform.getY() && p1Y + 1 <= platform.getY() + platform.getHeight()) {
+                        p1Y = platform.getY() - 1;
                         jumping = false;
                         velocityY = 0;
                         onPlatform = true;
