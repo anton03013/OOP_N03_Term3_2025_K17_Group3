@@ -18,7 +18,7 @@ public class BattleCanvas extends JPanel implements KeyListener {
     private int p1X = 50;
     private int p2X = 300;
     private int p1Y;
-    private int groundY; 
+    private int groundY;
     private boolean jumping = false;
     private int velocityY = 0;
 
@@ -38,21 +38,22 @@ public class BattleCanvas extends JPanel implements KeyListener {
     private AnimationHandler hurtAnimation;
     private AnimationHandler jumpAnimation;
 
+
     private List<Platforms> platforms = new ArrayList<>();
 
     public BattleCanvas() {
         setFocusable(true);
         addKeyListener(this);
-        p1 = new Player("John", 100, 15);
+        p1 = new Player("Ichigay", 100, 55);
         e1 = new Enemies("Grom", 100, 20);
         p1Y = groundY;
-        
+
         // Animations
-        idleAnimation = new AnimationHandler("src/texture/Sprites/Idle.png", 180, 180, 1, 11, 10);
-        runAnimation = new AnimationHandler("src/texture/Sprites/Run.png", 180, 180, 1, 8, 6);
-        attackAnimation = new AnimationHandler("src/texture/Sprites/Attack1.png", 180, 180, 1, 7, 5);
+        idleAnimation = new AnimationHandler("src/texture/Sprites/Idle1.png", 205, 114, 1, 3, 20);
+        runAnimation = new AnimationHandler("src/texture/Sprites/runner.png", 210, 108, 1, 5, 5);
+        attackAnimation = new AnimationHandler("src/texture/Sprites/ATKfinal.png", 208,108, 1, 8, 4);
         hurtAnimation = new AnimationHandler("src/texture/Sprites/Take Hit.png", 180, 180, 1, 4, 5);
-        jumpAnimation = new AnimationHandler("src/texture/Sprites/Jump.png", 180, 180, 1, 3, 5);
+        jumpAnimation = new AnimationHandler("src/texture/Sprites/JUMP1.png", 190, 100, 1, 3, 10);
         p1CurrentAnimation = idleAnimation; // Default animation for Player 1
         p2CurrentAnimation = idleAnimation; // Default animation for Player 2
         p1Width = idleAnimation.getWidth();
@@ -93,10 +94,10 @@ public class BattleCanvas extends JPanel implements KeyListener {
             }
 
             if (movingLeft) {
-                p1X = Math.max(0, p1X - 5); // Speed of left movement
+                p1X = Math.max(0, p1X - 8); // Speed of left movement
             }
             if (movingRight) {
-                p1X = Math.min(getWidth() - 40, p1X + 5); // Speed of right movement
+                p1X = Math.min(getWidth() - 40, p1X + 8); // Speed of right movement
             }
 
             boolean onPlatform = false;
@@ -138,7 +139,7 @@ public class BattleCanvas extends JPanel implements KeyListener {
 
         // Platforms
         for (Platforms platform : platforms) {
-            
+
             platform.draw(g);
         }
 
@@ -174,7 +175,7 @@ public class BattleCanvas extends JPanel implements KeyListener {
                 }
             }
             case KeyEvent.VK_SPACE -> {
-                if (attacking) return; 
+                if (attacking) return;
                 attacking = true;
                 p1CurrentAnimation = attackAnimation;
 
@@ -185,8 +186,8 @@ public class BattleCanvas extends JPanel implements KeyListener {
                         return;
                     }
                     e1Hurt = true; // Trigger hurt animation for Player 2
-                    new Timer(500, evt -> { 
-                        e1Hurt = false; 
+                    new Timer(500, evt -> {
+                        e1Hurt = false;
                         if (Math.abs(p1X - p2X) < (p1Width + p2Width) / 4) {
                             e1.attack(p1);
                             if (!p1.isAlive()) {
@@ -195,7 +196,7 @@ public class BattleCanvas extends JPanel implements KeyListener {
                             }
                             p1Hurt = true; // Trigger hurt animation for Player 1
                             new Timer(500, evt2 -> {
-                                p1Hurt = false; 
+                                p1Hurt = false;
                                 ((Timer) evt2.getSource()).stop();
                             }).start();
                         }
