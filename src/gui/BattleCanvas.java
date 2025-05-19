@@ -1,15 +1,8 @@
 package gui;
 
-import texture.AnimationHandler;
-
 import javax.swing.*;
-
-import Classes.*;
-
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class BattleCanvas extends JPanel implements KeyListener {
     private final BattleModel model;
