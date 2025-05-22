@@ -36,3 +36,26 @@ Chào mừng bạn đến với **Platformer RPG 2D**, một trò chơi nhập v
   - Giới thiệu các cấp độ và kẻ thù mới.
   - Nâng cấp đồ họa với các hiệu ứng hoạt hình.
 
+Xây dựng ứng dụng Quản lý Đấu Trường Game 2D
+
+## Giao diện: Java Swing (có thể mở rộng lên Spring Boot nếu cần).
+## Chức năng quản lý nhân vật (Player):
+   - Thêm, sửa, xóa nhân vật.
+   - Liệt kê thông tin các nhân vật, có thể lọc theo tên, sức mạnh, máu,...
+## Chức năng quản lý quái vật (Enemies):
+   - Thêm, sửa, xóa quái vật.
+   - Liệt kê thông tin các quái vật, lọc theo loại, sức mạnh,...
+## Chức năng quản lý nền/platform (Platforms):
+   - Thêm, sửa, xóa platform.
+   - Liệt kê thông tin các platform, lọc theo vị trí, kích thước,...
+## Chức năng gán nhân vật vào phòng đấu (gán Player cho Platform hoặc Battle):
+   - Cho phép phân bổ nhân vật vào các phòng/platform để thi đấu.
+## Dữ liệu được lưu trữ xuống file nhị phân:
+   - Tạo các lớp liên quan đến Player, Enemies, Platforms để đọc/ghi dữ liệu xuống file.
+## Khi làm việc với dữ liệu trong bộ nhớ:
+   - Dữ liệu được lưu trữ dưới dạng các Collection như ArrayList, LinkedList, Map,...
+## Các đối tượng chính:
+
+   - Đối tượng 01: Player (Nhân vật)
+   - Đối tượng 02: Enemies (Quái vật)
+   - Đối tượng 03: Platforms (Nền/phòng đấu)
