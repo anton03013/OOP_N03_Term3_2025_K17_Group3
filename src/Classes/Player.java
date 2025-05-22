@@ -6,7 +6,7 @@ public class Player {
     private String name;
     private int health;
     private int strength; 
-    private Random random = new Random();
+    private Random critical_rate = new Random();
 
     public Player(String name, int health, int strength) {
         this.name = name;
@@ -32,7 +32,7 @@ public class Player {
 
     public void attack(Player target) {
         int damage = strength; 
-        if (random.nextInt(100) < 25) {
+        if (critical_rate.nextInt(100) < 25) {
             damage *= 2;
             System.out.println(name + " lands a CRITICAL HIT!");
         }
