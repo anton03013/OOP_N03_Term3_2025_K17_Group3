@@ -71,3 +71,6 @@ Xây dựng ứng dụng Quản lý Đấu Trường Game 2D
 
 # Sequence Diagram for Movement
 ![Sequence Diagram for Movement](https://github.com/user-attachments/assets/d1ba4ab4-6efd-4c9f-8c67-866949a80a70)
+
+# Sequence Diagram for Platform
+![Sequence Diagram for Platform](https://github.com/user-attachments/assets/206a20ab-fd0e-431b-9b7f-56776b08311c)
