@@ -63,5 +63,5 @@ Xây dựng ứng dụng Quản lý Đấu Trường Game 2D
    - Đối tượng 03: Platforms (Nền/phòng đấu)
 # Class Diagram
 ![Class Diagram](https://github.com/user-attachments/assets/174e51be-6847-4dfa-a06c-a4782fe426d1)
-# Sequence DiagramDiagram
+# Sequence Diagram for Attack
 ![Sequence Diagram](https://github.com/user-attachments/assets/bbaf3504-ba03-4818-8424-4a5379859109)
