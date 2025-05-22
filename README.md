@@ -52,6 +52,7 @@ Xây dựng ứng dụng Quản lý Đấu Trường Game 2D
    - Cho phép phân bổ nhân vật vào các phòng/platform để thi đấu.
 
 ## Dữ liệu được lưu trữ xuống file nhị phân:
+
    - Tạo các lớp liên quan đến Player, Enemies, Platforms để đọc/ghi dữ liệu xuống file.
 ## Khi làm việc với dữ liệu trong bộ nhớ:
    - Dữ liệu được lưu trữ dưới dạng các Collection như ArrayList, LinkedList, Map,...
@@ -62,3 +63,4 @@ Xây dựng ứng dụng Quản lý Đấu Trường Game 2D
    - Đối tượng 03: Platforms (Nền/phòng đấu)
 
 ![Class Diagram](https://github.com/user-attachments/assets/174e51be-6847-4dfa-a06c-a4782fe426d1)
+![Sequence Diagram](https://github.com/user-attachments/assets/bbaf3504-ba03-4818-8424-4a5379859109)
