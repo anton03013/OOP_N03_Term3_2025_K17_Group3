@@ -50,6 +50,7 @@ Xây dựng ứng dụng Quản lý Đấu Trường Game 2D
    - Liệt kê thông tin các platform, lọc theo vị trí, kích thước,...
 ## Chức năng gán nhân vật vào phòng đấu (gán Player cho Platform hoặc Battle):
    - Cho phép phân bổ nhân vật vào các phòng/platform để thi đấu.
+
 ## Dữ liệu được lưu trữ xuống file nhị phân:
    - Tạo các lớp liên quan đến Player, Enemies, Platforms để đọc/ghi dữ liệu xuống file.
 ## Khi làm việc với dữ liệu trong bộ nhớ:
@@ -59,3 +60,5 @@ Xây dựng ứng dụng Quản lý Đấu Trường Game 2D
    - Đối tượng 01: Player (Nhân vật)
    - Đối tượng 02: Enemies (Quái vật)
    - Đối tượng 03: Platforms (Nền/phòng đấu)
+
+![Class Diagram](https://github.com/user-attachments/assets/174e51be-6847-4dfa-a06c-a4782fe426d1)
