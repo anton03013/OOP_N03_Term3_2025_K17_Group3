@@ -61,7 +61,13 @@ Xây dựng ứng dụng Quản lý Đấu Trường Game 2D
    - Đối tượng 01: Player (Nhân vật)
    - Đối tượng 02: Enemies (Quái vật)
    - Đối tượng 03: Platforms (Nền/phòng đấu)
+
 # Class Diagram
+
 ![Class Diagram](https://github.com/user-attachments/assets/174e51be-6847-4dfa-a06c-a4782fe426d1)
+
 # Sequence Diagram for Attack
-![Sequence Diagram](https://github.com/user-attachments/assets/bbaf3504-ba03-4818-8424-4a5379859109)
+![Sequence Diagram for Attack](https://github.com/user-attachments/assets/32e7343f-0ab8-4f9e-9a31-e1f156f4e92d)
+
+# Sequence Diagram for Movement
+![Sequence Diagram for Movement](https://github.com/user-attachments/assets/d1ba4ab4-6efd-4c9f-8c67-866949a80a70)
