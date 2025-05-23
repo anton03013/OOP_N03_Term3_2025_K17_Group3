@@ -29,7 +29,7 @@ public class BattleModel {
         idleAnimation = new AnimationHandler("src/texture/Sprites/Idle1.png", 205, 114, 1, 3, 12);
         runAnimation = new AnimationHandler("src/texture/Sprites/runner.png", 215, 101, 1, 5, 3);
         attackAnimation = new AnimationHandler("src/texture/Sprites/ATKfinal.png", 208, 108, 1, 8, 4);
-        hurtAnimation = new AnimationHandler("src/texture/Sprites/Take Hit.png", 180, 180, 1, 4, 5);
+        hurtAnimation = new AnimationHandler("src/texture/Sprites/gethit.png", 250, 108, 1, 2, 5);
         jumpAnimation = new AnimationHandler("src/texture/Sprites/JUMP1.png", 200, 100, 1, 3, 5);
         p1CurrentAnimation = idleAnimation;
         p2CurrentAnimation = e1idle;
