@@ -4,6 +4,8 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
+import Classes.Platforms;
+
 public class BattleController {
     private final BattleModel model;
     private final BattleCanvas view;
@@ -49,10 +51,10 @@ public class BattleController {
         }
 
         if (model.movingLeft) {
-            model.p1X = Math.max(0, model.p1X - 5);
+            model.p1X = Math.max(0, model.p1X - 10);
         }
         if (model.movingRight) {
-            model.p1X = Math.min(view.getWidth() - 40, model.p1X + 5);
+            model.p1X = Math.min(view.getWidth() - 40, model.p1X + 10);
         }
 
         boolean onPlatform = false;
@@ -127,7 +129,7 @@ public class BattleController {
 
     public void render(Graphics g, int width, int height) {
         model.groundY = height - 100;
-        g.setColor(Color.GRAY);
+        g.setColor(Color.GREEN);
         g.fillRect(0, model.groundY + 30, width, 5);
 
         for (var platform : model.platforms) {
