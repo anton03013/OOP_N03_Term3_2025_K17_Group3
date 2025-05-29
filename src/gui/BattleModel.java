@@ -5,7 +5,6 @@ import texture.AnimationHandler;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class BattleModel {
     public Player p1;
     public Enemies e1;
@@ -21,7 +20,6 @@ public class BattleModel {
     public int enemySpeed = 4, enemyPauseTimer = 0;
     public final int enemyPauseDuration = 160;
     public static final int PLAYER_HEIGHT = 0;
-    
 
     public BattleModel() {
         p1 = new Player("John", 100, 15);
@@ -37,7 +35,7 @@ public class BattleModel {
         p2CurrentAnimation = e1idle;
         p1Width = idleAnimation.getWidth();
         p2Width = idleAnimation.getWidth();
-        platforms.add(new Platforms(200, 100, 150, 10));
-        platforms.add(new Platforms(500, 400, 150, 10));
+        platforms.add(new Platforms(200, 600, 150, 10));
+        platforms.add(new Platforms(500, 500, 150, 10));
     }
 }

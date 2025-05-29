@@ -32,14 +32,14 @@ public class BattleController {
             model.p1CurrentAnimation = model.attackAnimation;
         } else if (model.jumping) {
             model.p1CurrentAnimation = model.jumpAnimation;
-        } else if (model.movingLeft || model.movingRight) {
+        } else if (model.movingLeft ^ model.movingRight) {
             model.p1CurrentAnimation = model.runAnimation;
         } else {
             model.p1CurrentAnimation = model.idleAnimation;
         }
 
         if (model.e1Hurt) {
-            model.p2CurrentAnimation = model.hurtAnimation;
+            model.p2CurrentAnimation = model.e1hurt;
         } else if (model.enemyMovingRight) {
             model.enemyFacingRight = true;
             model.p2CurrentAnimation = model.e1run;
@@ -49,13 +49,14 @@ public class BattleController {
         } else {
             model.p2CurrentAnimation = model.e1idle;
         }
-
         if (model.movingLeft) {
             model.p1X = Math.max(0, model.p1X - 10);
         }
         if (model.movingRight) {
             model.p1X = Math.min(view.getWidth() - 40, model.p1X + 10);
         }
+
+
 
         boolean onPlatform = false;
         for (var platform : model.platforms) {
@@ -140,7 +141,7 @@ public class BattleController {
             model.p1Y = model.groundY;
         }
         model.p1CurrentAnimation.draw(g, model.p1X, model.p1Y - 75, model.facingRight);
-        g.drawString(model.p1.getName() + " HP: " + model.p1.getHealth(), model.p1X, model.p1Y - 20);
+        g.drawString(model.p1.getName() + " HP: " + model.p1.getHealth(), 70, view.getHeight() - 800);
 
         model.p2CurrentAnimation.draw(g, model.p2X, model.groundY - 100, model.enemyFacingRight);
         g.drawString(model.e1.getName() + " HP: " + model.e1.getHealth(), model.p2X, model.groundY - 70);
@@ -149,63 +150,68 @@ public class BattleController {
     public void keyPressed(KeyEvent e) {
         if (!model.p1.isAlive() || !model.e1.isAlive()) return;
 
-        switch (e.getKeyCode()) {
-            case KeyEvent.VK_A -> {
-                model.movingLeft = true;
-                model.facingRight = false;
-            }
-            case KeyEvent.VK_D -> {
-                model.movingRight = true;
-                model.facingRight = true;
-            }
-            case KeyEvent.VK_W -> {
-                if (!model.jumping) {
-                    model.jumping = true;
-                    model.velocityY = -20;
-                }
-            }
-            case KeyEvent.VK_SPACE -> {
-                if (model.attacking) return;
-                model.attacking = true;
-                model.p1CurrentAnimation = model.attackAnimation;
+        int key = e.getKeyCode();
+        if (key == KeyEvent.VK_A) {
+            model.movingLeft = true;
+            if (!model.movingRight) model.facingRight = false;
+        } else if (key == KeyEvent.VK_D) {
+            model.movingRight = true;
+            if (!model.movingLeft) model.facingRight = true;
 
-                if (Math.abs(model.p1X - model.p2X) < (model.p1Width + model.p2Width) / 4) {
-                    model.p1.attack(model.e1);
-                    if (!model.e1.isAlive()) {
-                        showWinner(model.p1.getName());
-                        return;
-                    }
-                    model.e1Hurt = true;
-                    new Timer(500, evt -> {
-                        model.e1Hurt = false;
-                        if (Math.abs(model.p1X - model.p2X) < (model.p1Width + model.p2Width) / 4) {
-                            model.e1.attack(model.p1);
-                            if (!model.p1.isAlive()) {
-                                showWinner(model.e1.getName());
-                                return;
-                            }
-                            model.p1Hurt = true;
-                            new Timer(500, evt2 -> {
-                                model.p1Hurt = false;
-                                ((Timer) evt2.getSource()).stop();
-                            }).start();
+        } else if (key == KeyEvent.VK_W) {
+            if (!model.jumping) {
+                model.jumping = true;
+                model.velocityY = -20;
+            }
+
+        } else if (key == KeyEvent.VK_SPACE) {
+            if (model.attacking) return;
+
+            model.attacking = true;
+            model.p1CurrentAnimation = model.attackAnimation;
+
+            if (Math.abs(model.p1X - model.p2X) < (model.p1Width + model.p2Width) / 4) {
+                model.p1.attack(model.e1);
+                if (!model.e1.isAlive()) {
+                    showWinner(model.p1.getName());
+                    return;
+                }
+
+                model.e1Hurt = true;
+                new Timer(500, evt -> {
+                    model.e1Hurt = false;
+
+                    if (Math.abs(model.p1X - model.p2X) < (model.p1Width + model.p2Width) / 4) {
+                        model.e1.attack(model.p1);
+                        if (!model.p1.isAlive()) {
+                            showWinner(model.e1.getName());
+                            return;
                         }
-                        new Timer(550, evt3 -> {
-                            model.p2CurrentAnimation = model.idleAnimation;
-                            ((Timer) evt3.getSource()).stop();
-                        }).start();
-                        ((Timer) evt.getSource()).stop();
-                    }).start();
-                }
 
-                new Timer(550, evt -> {
-                    model.attacking = false;
-                    model.p1CurrentAnimation = model.idleAnimation;
+                        model.p1Hurt = true;
+                        new Timer(500, evt2 -> {
+                            model.p1Hurt = false;
+                            ((Timer) evt2.getSource()).stop();
+                        }).start();
+                    }
+
+                    new Timer(550, evt3 -> {
+                        model.p2CurrentAnimation = model.idleAnimation;
+                        ((Timer) evt3.getSource()).stop();
+                    }).start();
+
                     ((Timer) evt.getSource()).stop();
                 }).start();
             }
+
+            new Timer(550, evt -> {
+                model.attacking = false;
+                model.p1CurrentAnimation = model.idleAnimation;
+                ((Timer) evt.getSource()).stop();
+            }).start();
         }
     }
+
 
     public void keyReleased(KeyEvent e) {
         switch (e.getKeyCode()) {

@@ -10,4 +10,10 @@ public class BattleWindow extends JFrame {
         add(new BattleCanvas());
         setVisible(true);
     }
+    public int getHeight() {
+        return getSize().height;
+    }
+    public int getWidth() {
+        return getSize().width;
+    }
 }
