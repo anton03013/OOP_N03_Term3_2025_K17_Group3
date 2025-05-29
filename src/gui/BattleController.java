@@ -39,7 +39,7 @@ public class BattleController {
         }
 
         if (model.e1Hurt) {
-            model.p2CurrentAnimation = model.e1hurt;
+            model.p2CurrentAnimation = model.e1idle;
         } else if (model.enemyMovingRight) {
             model.enemyFacingRight = true;
             model.p2CurrentAnimation = model.e1run;
