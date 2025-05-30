@@ -30,3 +30,5 @@
 //        } else if (key == KeyEvent.VK_D) {
 //            model.movingRight = true;
 //            if (!model.movingLeft) model.facingRight = true;
+//           }
+//    }
