@@ -38,8 +38,13 @@ public class BattleController {
             model.p1CurrentAnimation = model.idleAnimation;
         }
 
+        model.enemyMovingLeft = false;
+        model.enemyMovingRight = false;
+
         if (model.e1Hurt) {
             model.p2CurrentAnimation = model.e1idle;
+        } else if (model.enemyAttacking) {
+            model.p2CurrentAnimation = model.e1attack;
         } else if (model.enemyMovingRight) {
             model.enemyFacingRight = true;
             model.p2CurrentAnimation = model.e1run;
@@ -87,7 +92,7 @@ public class BattleController {
             }
         }
 
-        moveEnemy();
+        //moveEnemy();
 
         model.p1CurrentAnimation.update();
         model.p2CurrentAnimation.update();
@@ -180,26 +185,20 @@ public class BattleController {
                 model.e1Hurt = true;
                 new Timer(500, evt -> {
                     model.e1Hurt = false;
-
+                    model.enemyAttacking = true;
                     if (Math.abs(model.p1X - model.p2X) < (model.p1Width + model.p2Width) / 4) {
                         model.e1.attack(model.p1);
                         if (!model.p1.isAlive()) {
                             showWinner(model.e1.getName());
                             return;
                         }
-
                         model.p1Hurt = true;
-                        new Timer(500, evt2 -> {
+                        new Timer(900, evt2 -> {
+                            model.enemyAttacking = false;
                             model.p1Hurt = false;
                             ((Timer) evt2.getSource()).stop();
                         }).start();
                     }
-
-                    new Timer(550, evt3 -> {
-                        model.p2CurrentAnimation = model.idleAnimation;
-                        ((Timer) evt3.getSource()).stop();
-                    }).start();
-
                     ((Timer) evt.getSource()).stop();
                 }).start();
             }
@@ -207,6 +206,12 @@ public class BattleController {
             new Timer(550, evt -> {
                 model.attacking = false;
                 model.p1CurrentAnimation = model.idleAnimation;
+                ((Timer) evt.getSource()).stop();
+            }).start();
+        } else if (key == KeyEvent.VK_E) {
+            model.enemyAttacking = true;
+            new Timer(500, evt -> {
+                model.enemyAttacking = false;
                 ((Timer) evt.getSource()).stop();
             }).start();
         }
