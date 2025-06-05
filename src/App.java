@@ -5,6 +5,6 @@ public class App {
     public static void main(String[] args) {
         // new BattleWindow();
         //test.Test.test(args);
-        TestSequence.run(args);
+        TestSequence.test();
     }
 }
