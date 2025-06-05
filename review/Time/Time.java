@@ -1,4 +1,4 @@
-package review;
+package Time;
 
 public class Time {
     private int hour;

@@ -1,6 +1,6 @@
 package test;
 
-import review.Time;
+import Time.Time;
 
 public class TestTime {
     public static void main(String[] args) {

@@ -1,6 +1,6 @@
 package test;
 
-import review.User;
+import User.User;
 
 public class TestUser {
     public static void main(String[] args) {

@@ -2,6 +2,8 @@ package Classes;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.awt.Graphics;
+
 
 public class PlatformManager {
     private List<Platforms> platforms;
@@ -10,12 +12,10 @@ public class PlatformManager {
         platforms = new ArrayList<>();
     }
 
-    // CREATE
     public void addPlatform(int x, int y, int width, int height) {
         platforms.add(new Platforms(x, y, width, height));
     }
 
-    // READ
     public Platforms getPlatform(int index) {
         if (index >= 0 && index < platforms.size()) {
             return platforms.get(index);
@@ -27,7 +27,6 @@ public class PlatformManager {
         return platforms;
     }
 
-    // UPDATE
     public boolean updatePlatform(int index, int newX, int newY, int newWidth, int newHeight) {
         Platforms p = getPlatform(index);
         if (p != null) {
@@ -37,12 +36,17 @@ public class PlatformManager {
         return false;
     }
 
-    // DELETE
     public boolean deletePlatform(int index) {
         if (index >= 0 && index < platforms.size()) {
             platforms.remove(index);
             return true;
         }
         return false;
+    }
+
+    public void drawAllPlatforms(Graphics g) {
+        for (Platforms platform : platforms) {
+            platform.draw(g);
+        }
     }
 }

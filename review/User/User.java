@@ -1,4 +1,4 @@
-package review;
+package User;
 
 public class User {
     private String name;

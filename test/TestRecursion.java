@@ -1,6 +1,6 @@
 package test;
 
-import review.Recursion;
+import Recursion.Recursion;
 
 public class TestRecursion {
     public static void main(String[] args) {

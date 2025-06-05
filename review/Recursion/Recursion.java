@@ -1,4 +1,4 @@
-package review;
+package Recursion;
 
 public class Recursion {
     public static long fac(int n) {
