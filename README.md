@@ -111,7 +111,4 @@
 ![Sequence Diagram for Platform](https://github.com/user-attachments/assets/206a20ab-fd0e-431b-9b7f-56776b08311c)
 
 # KeyPressed Flowchart
-![KeyPressed Flowchart (1)](https://github.com/user-attachments/assets/0078c3fe-734a-404c-acaf-b500c3c9c733)
-
-
-
+![KeyPressed Flowchart](https://github.com/user-attachments/assets/5bf75a23-4c66-467d-bd2e-34a877865058)
