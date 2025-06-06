@@ -11,9 +11,9 @@ Chào mừng bạn đến với **Platformer RPG 2D**, một trò chơi nhập v
 
 ## 🚀 Công Nghệ Sử Dụng
 - **Ngôn Ngữ**: Java
-- **Thư Viện**: 
-  - **LibGDX**: Phát triển game 2D (đồ họa, vật lý, quản lý sprite).
-  - **Swing**: Các thành phần giao diện người dùng.
+- **Thư Viện**:  
+  - **Swing**: - Các thành phần giao diện người dùng.
+               - Phát triển game 2D (đồ họa, vật lý, quản lý sprite).
 
 ## 🎮 Cách Chơi
 1. **Di Chuyển**:
