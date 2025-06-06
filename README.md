@@ -74,3 +74,32 @@ Xây dựng ứng dụng Quản lý Đấu Trường Game 2D
 
 # Sequence Diagram for Platform
 ![Sequence Diagram for Platform](https://github.com/user-attachments/assets/206a20ab-fd0e-431b-9b7f-56776b08311c)
+
+
+#Phương thức của Quang:
+Chức năng : khi người chơi ấn nút A hoặc D thì nhân vật sẽ di chuyển theo hướng trái-phải,
+nếu giữ cả 2 nút cùng lúc nhân vật sẽ đứng yên, nhân vật di chuyển được tính là lệch 
+đi 10 đơn vị so với vị trí đứng tùy theo hướng ấn. Nhân vật chỉ di chuyển khi nhấn phím và dừng khi nhả phím.
+Code:#sửa hướng xoay
+if (key == KeyEvent.VK_A) {
+            model.movingLeft = true;
+            if (!model.movingRight) model.facingRight = false;
+        } else if (key == KeyEvent.VK_D) {
+            model.movingRight = true;
+            if (!model.movingLeft) model.facingRight = true;
+#thay đổi tọa độ
+if (model.movingLeft) {
+            model.p1X = Math.max(0, model.p1X - 10);
+        }
+        if (model.movingRight) {
+            model.p1X = Math.min(view.getWidth() - 40, model.p1X + 10);
+        }
+#function nhả phím
+public void keyReleased(KeyEvent e) {
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_A -> model.movingLeft = false;
+            case KeyEvent.VK_D -> model.movingRight = false;
+        }
+  }
+
+
