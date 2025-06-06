@@ -83,7 +83,6 @@
 
 ### 💾 Lưu Trữ Dữ Liệu
 
-- Dữ liệu lưu dưới dạng **file nhị phân**  
 - Dùng các class `Player`, `Enemies`, `Platforms` để ghi/đọc
 
 ### 🧠 Dữ Liệu Trong Bộ Nhớ
