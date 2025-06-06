@@ -38,7 +38,7 @@ Chào mừng bạn đến với **Platformer RPG 2D**, một trò chơi nhập v
 
 Xây dựng ứng dụng Quản lý Đấu Trường Game 2D
 
-## Giao diện: Java Swing (có thể mở rộng lên Spring Boot nếu cần).
+## Giao diện: Java Swing .
 ## Chức năng quản lý nhân vật (Player):
    - Thêm, sửa, xóa nhân vật.
    - Liệt kê thông tin các nhân vật, có thể lọc theo tên, sức mạnh, máu,...
