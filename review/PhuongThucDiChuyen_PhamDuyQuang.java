@@ -32,3 +32,10 @@
 //            if (!model.movingLeft) model.facingRight = true;
 //           }
 //    }
+   // public void keyReleased(KeyEvent e) {
+//   	  switch (e.getKeyCode()) {
+//      case KeyEvent.VK_A -> model.movingLeft = false;
+//       case KeyEvent.VK_D -> model.movingRight = false;
+//      }
+  //  }
+	
