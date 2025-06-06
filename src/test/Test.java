@@ -5,7 +5,7 @@ import Classes.Enemies;
 import Classes.Platforms;
 
 public class Test {
-    public static void main(String[] args) {
+    public static void test(String[] args) {
         // Test Player methods
         Player player = new Player("Hero", 100, 20);
         System.out.println("== Player Status ==");
