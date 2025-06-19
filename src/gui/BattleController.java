@@ -61,8 +61,6 @@ public class BattleController {
             model.p1X = Math.min(view.getWidth() - 40, model.p1X + 10);
         }
 
-
-
         boolean onPlatform = false;
         for (var platform : model.platforms) {
             if (model.p1X + model.p1Width > platform.getX() && model.p1X < platform.getX() + platform.getWidth()) {
@@ -210,10 +208,17 @@ public class BattleController {
                 System.out.println("Kết thúc xử lý phím Space.");
             }
         } else if (key == KeyEvent.VK_W) {
-            if (!model.jumping) {
-                model.jumping = true;
-                model.velocityY = -20;
-            }
+                try {
+                    if (!model.jumping) {
+                        model.jumping = true;
+                        model.velocityY = -20;
+                    }
+                } catch (Exception ex) {
+                    System.out.println("Lỗi khi nhấn W để nhảy: " + ex.getMessage());
+                    ex.printStackTrace();
+                } finally {
+                    System.out.println("Kết thúc xử lý phím W.");
+                }
 
         } else if (key == KeyEvent.VK_E) {
             model.enemyAttacking = true;
@@ -223,7 +228,6 @@ public class BattleController {
             }).start();
         }
     }
-
 
     public void keyReleased(KeyEvent e) {
         switch (e.getKeyCode()) {
