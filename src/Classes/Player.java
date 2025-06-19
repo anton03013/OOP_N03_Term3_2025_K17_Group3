@@ -27,17 +27,26 @@ public class Player {
     }
 
     public void printStatus() {
-        System.out.println("Player: " + name + ", Health: " + health + ", Strength: " + strength);
+        try {
+            System.out.println("Player: " + name + ", Health: " + health + ", Strength: " + strength);
+        } catch (Exception e) {
+            System.out.println("Lỗi khi in trạng thái: " + e.getMessage());
+        }
     }
 
     public void attack(Player target) {
-        int damage = strength; 
-        if (critical_rate.nextInt(100) < 25) {
-            damage *= 2;
-            System.out.println(name + " lands a CRITICAL HIT!");
+        try {
+            int damage = strength;
+            if (critical_rate.nextInt(100) < 25) {
+                damage *= 2;
+                System.out.println(name + " lands a CRITICAL HIT!");
+            }
+            System.out.println(name + " attacks " + target.getName() + " for " + damage);
+            target.takeDamage(damage);
+        } catch (Exception e) {
+            System.out.println("Lỗi khi tấn công: " + e.getMessage());
         }
-        System.out.println(name + " attacks " + target.getName() + " for " + damage);
-        target.takeDamage(damage);
+
     }
 
     public boolean isAlive() {
