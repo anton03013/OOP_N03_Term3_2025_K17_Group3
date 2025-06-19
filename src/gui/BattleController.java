@@ -161,53 +161,60 @@ public class BattleController {
             if (!model.movingRight) model.facingRight = false;
         } else if (key == KeyEvent.VK_D) {
             model.movingRight = true;
-            if (!model.movingLeft) model.facingRight = true;
+            if (!model.movingLeft)
+                model.facingRight = true;
+        } else if (key == KeyEvent.VK_SPACE) {
+            try {
+                if (model.attacking) return;
 
+                model.attacking = true;
+                model.p1CurrentAnimation = model.attackAnimation;
+
+                if (Math.abs(model.p1X - model.p2X) < (model.p1Width + model.p2Width) / 4) {
+                    model.p1.attack(model.e1);
+                    if (!model.e1.isAlive()) {
+                        showWinner(model.p1.getName());
+                        return;
+                    }
+
+                    model.e1Hurt = true;
+                    new Timer(500, evt -> {
+                        model.e1Hurt = false;
+                        model.enemyAttacking = true;
+                        if (Math.abs(model.p1X - model.p2X) < (model.p1Width + model.p2Width) / 4) {
+                            model.e1.attack(model.p1);
+                            if (!model.p1.isAlive()) {
+                                showWinner(model.e1.getName());
+                                return;
+                            }
+                            model.p1Hurt = true;
+                            new Timer(900, evt2 -> {
+                                model.enemyAttacking = false;
+                                model.p1Hurt = false;
+                                ((Timer) evt2.getSource()).stop();
+                            }).start();
+                        }
+                        ((Timer) evt.getSource()).stop();
+                    }).start();
+                }
+
+                new Timer(550, evt -> {
+                    model.attacking = false;
+                    model.p1CurrentAnimation = model.idleAnimation;
+                    ((Timer) evt.getSource()).stop();
+                }).start();
+            } catch (Exception ex) {
+                System.out.println("Đã xảy ra lỗi khi xử lý phím Space: " + ex.getMessage());
+                ex.printStackTrace();
+            } finally {
+                System.out.println("Kết thúc xử lý phím Space.");
+            }
         } else if (key == KeyEvent.VK_W) {
             if (!model.jumping) {
                 model.jumping = true;
                 model.velocityY = -20;
             }
 
-        } else if (key == KeyEvent.VK_SPACE) {
-            if (model.attacking) return;
-
-            model.attacking = true;
-            model.p1CurrentAnimation = model.attackAnimation;
-
-            if (Math.abs(model.p1X - model.p2X) < (model.p1Width + model.p2Width) / 4) {
-                model.p1.attack(model.e1);
-                if (!model.e1.isAlive()) {
-                    showWinner(model.p1.getName());
-                    return;
-                }
-
-                model.e1Hurt = true;
-                new Timer(500, evt -> {
-                    model.e1Hurt = false;
-                    model.enemyAttacking = true;
-                    if (Math.abs(model.p1X - model.p2X) < (model.p1Width + model.p2Width) / 4) {
-                        model.e1.attack(model.p1);
-                        if (!model.p1.isAlive()) {
-                            showWinner(model.e1.getName());
-                            return;
-                        }
-                        model.p1Hurt = true;
-                        new Timer(900, evt2 -> {
-                            model.enemyAttacking = false;
-                            model.p1Hurt = false;
-                            ((Timer) evt2.getSource()).stop();
-                        }).start();
-                    }
-                    ((Timer) evt.getSource()).stop();
-                }).start();
-            }
-
-            new Timer(550, evt -> {
-                model.attacking = false;
-                model.p1CurrentAnimation = model.idleAnimation;
-                ((Timer) evt.getSource()).stop();
-            }).start();
         } else if (key == KeyEvent.VK_E) {
             model.enemyAttacking = true;
             new Timer(500, evt -> {
