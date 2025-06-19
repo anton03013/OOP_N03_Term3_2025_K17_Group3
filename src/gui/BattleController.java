@@ -202,10 +202,10 @@ public class BattleController {
                     ((Timer) evt.getSource()).stop();
                 }).start();
             } catch (Exception ex) {
-                System.out.println("Đã xảy ra lỗi khi xử lý phím Space: " + ex.getMessage());
+                System.out.println("Error when pressing Space: " + ex.getMessage());
                 ex.printStackTrace();
             } finally {
-                System.out.println("Kết thúc xử lý phím Space.");
+                System.out.println("Finished processing the Space key.");
             }
         } else if (key == KeyEvent.VK_W) {
                 try {
@@ -214,10 +214,10 @@ public class BattleController {
                         model.velocityY = -20;
                     }
                 } catch (Exception ex) {
-                    System.out.println("Lỗi khi nhấn W để nhảy: " + ex.getMessage());
+                    System.out.println("Error when pressing W: " + ex.getMessage());
                     ex.printStackTrace();
                 } finally {
-                    System.out.println("Kết thúc xử lý phím W.");
+                    System.out.println("Finished processing the W key.");
                 }
 
         } else if (key == KeyEvent.VK_E) {
