@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuộc Phiêu Lưu Của Hai Hiệp Sĩ</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .game-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        canvas {
+            border: 3px solid #fff;
+            border-radius: 10px;
+            background: linear-gradient(to bottom, #87CEEB 0%, #98FB98 100%);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .controls {
+            margin-top: 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .controls h3 {
+            margin: 0 0 10px 0;
+            font-size: 18px;
+        }
+
+        .controls p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        .status {
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            text-align: center;
+        }
+
+        .reset-btn {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+
+        .reset-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .winner {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        <div class="status" id="status">
+            <div id="player1Status">Player 1: HP 100</div>
+            <div id="enemyStatus">Enemy: HP 100</div>
+        </div>
+        <button class="reset-btn" onclick="resetGame()">Reset Game</button>
+    </div>
+
+    <div class="controls">
+        <h3>Controls:</h3>
+        <p>A/D - Move Left/Right</p>
+        <p>W - Jump</p>
+        <p>Space - Attack</p>
+    </div>
+
+    <script>
+        class AnimationHandler {
+            constructor(imagePath, frameWidth, frameHeight, rows, cols, frameDelay) {
+                this.image = new Image();
+                this.image.src = imagePath;
+                this.frameWidth = frameWidth;
+                this.frameHeight = frameHeight;
+                this.rows = rows;
+                this.cols = cols;
+                this.frameDelay = frameDelay;
+                this.currentFrame = 0;
+                this.frameCounter = 0;
+            }
+
+            update() {
+                this.frameCounter++;
+                if (this.frameCounter >= this.frameDelay) {
+                    this.frameCounter = 0;
+                    this.currentFrame = (this.currentFrame + 1) % (this.rows * this.cols);
+                }
+            }
+
+            draw(ctx, x, y, facingRight) {
+                const frameX = (this.currentFrame % this.cols) * this.frameWidth;
+                const frameY = Math.floor(this.currentFrame / this.cols) * this.frameHeight;
+
+                ctx.save();
+                if (!facingRight) {
+                    ctx.scale(-1, 1);
+                    ctx.translate(-x - this.frameWidth, 0);
+                }
+
+                ctx.drawImage(
+                    this.image,
+                    frameX, frameY, this.frameWidth, this.frameHeight,
+                    x, y, this.frameWidth, this.frameHeight
+                );
+                ctx.restore();
+            }
+        }
+
+        class GameRenderer {
+            constructor() {
+                this.canvas = document.getElementById('gameCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.animations = {};
+                this.loadedTextures = 0;
+                this.totalTextures = 8;
+                this.gameState = null;
+                this.keys = {};
+                
+                this.setupEventListeners();
+                this.loadTextures();
+            }
+
+            setupEventListeners() {
+                document.addEventListener('keydown', (e) => {
+                    this.keys[e.code] = true;
+                    this.sendInput();
+                });
+
+                document.addEventListener('keyup', (e) => {
+                    this.keys[e.code] = false;
+                    this.sendInput();
+                });
+            }
+
+            async loadTextures() {
+                const textureConfigs = [
+                    { name: 'playerIdle', path: '/texture/Sprites/Idle1.png', width: 205, height: 114, rows: 1, cols: 3, delay: 12 },
+                    { name: 'playerRun', path: '/texture/Sprites/runner.png', width: 215, height: 101, rows: 1, cols: 5, delay: 3 },
+                    { name: 'playerAttack', path: '/texture/Sprites/ATKfinal.png', width: 208, height: 108, rows: 1, cols: 8, delay: 4 },
+                    { name: 'playerHurt', path: '/texture/Sprites/gethit.png', width: 250, height: 108, rows: 1, cols: 2, delay: 5 },
+                    { name: 'playerJump', path: '/texture/Sprites/JUMP1.png', width: 200, height: 100, rows: 1, cols: 3, delay: 5 },
+                    { name: 'enemyIdle', path: '/texture/Nightborne/Idle1.png', width: 160, height: 160, rows: 1, cols: 9, delay: 6 },
+                    { name: 'enemyRun', path: '/texture/Nightborne/Run.png', width: 160, height: 160, rows: 1, cols: 6, delay: 6 },
+                    { name: 'enemyAttack', path: '/texture/Nightborne/Attack.png', width: 160, height: 160, rows: 1, cols: 12, delay: 4 }
+                ];
+
+                for (const config of textureConfigs) {
+                    this.animations[config.name] = new AnimationHandler(
+                        config.path, config.width, config.height, 
+                        config.rows, config.cols, config.delay
+                    );
+                }
+            }
+
+            async sendInput() {
+                const input = {
+                    keyA: this.keys['KeyA'] || false,
+                    keyD: this.keys['KeyD'] || false,
+                    keySpace: this.keys['Space'] || false,
+                    keyW: this.keys['KeyW'] || false
+                };
+
+                try {
+                    const response = await fetch('/api/game/input', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(input)
+                    });
+                    
+                    if (response.ok) {
+                        this.gameState = await response.json();
+                        this.updateStatus();
+                    }
+                } catch (error) {
+                    console.error('Error sending input:', error);
+                }
+            }
+
+            async updateGameState() {
+                try {
+                    const response = await fetch('/api/game/state');
+                    if (response.ok) {
+                        this.gameState = await response.json();
+                        this.updateStatus();
+                    }
+                } catch (error) {
+                    console.error('Error updating game state:', error);
+                }
+            }
+
+            updateStatus() {
+                if (!this.gameState) return;
+
+                const player1 = this.gameState.player1;
+                const enemy = this.gameState.enemy;
+
+                document.getElementById('player1Status').textContent = 
+                    `${player1.name}: HP ${player1.health}`;
+                document.getElementById('enemyStatus').textContent = 
+                    `${enemy.name}: HP ${enemy.health}`;
+
+                if (this.gameState.gameOver) {
+                    const statusDiv = document.getElementById('status');
+                    statusDiv.innerHTML = `<div class="winner">Winner: ${this.gameState.winner}!</div>`;
+                }
+            }
+
+            render() {
+                if (!this.gameState) return;
+
+                // Clear canvas
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+                // Draw background
+                this.ctx.fillStyle = '#87CEEB';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+                // Draw ground
+                this.ctx.fillStyle = '#8B4513';
+                this.ctx.fillRect(0, this.gameState.groundY + 30, this.canvas.width, 5);
+
+                // Draw platforms
+                this.ctx.fillStyle = '#808080';
+                for (const platform of this.gameState.platforms) {
+                    this.ctx.fillRect(platform.x - 100, platform.y + 25, platform.width + 190, platform.height);
+                }
+
+                // Draw player
+                this.drawPlayer(this.gameState.player1);
+                
+                // Draw enemy
+                this.drawPlayer(this.gameState.enemy, true);
+            }
+
+            drawPlayer(playerState, isEnemy = false) {
+                let animation;
+                const prefix = isEnemy ? 'enemy' : 'player';
+                
+                switch (playerState.currentAnimation) {
+                    case 'idle':
+                        animation = this.animations[prefix + 'Idle'];
+                        break;
+                    case 'run':
+                        animation = this.animations[prefix + 'Run'];
+                        break;
+                    case 'attack':
+                        animation = this.animations[prefix + 'Attack'];
+                        break;
+                    case 'hurt':
+                        animation = this.animations[prefix + 'Hurt'];
+                        break;
+                    case 'jump':
+                        animation = this.animations[prefix + 'Jump'];
+                        break;
+                    default:
+                        animation = this.animations[prefix + 'Idle'];
+                }
+
+                if (animation && animation.image.complete) {
+                    animation.update();
+                    animation.draw(this.ctx, playerState.x, playerState.y - 75, playerState.facingRight);
+                }
+
+                // Draw health bar
+                const barWidth = 100;
+                const barHeight = 10;
+                const barX = playerState.x;
+                const barY = playerState.y - 100;
+
+                // Background
+                this.ctx.fillStyle = '#ff0000';
+                this.ctx.fillRect(barX, barY, barWidth, barHeight);
+
+                // Health
+                this.ctx.fillStyle = '#00ff00';
+                const healthWidth = (playerState.health / 100) * barWidth;
+                this.ctx.fillRect(barX, barY, healthWidth, barHeight);
+
+                // Border
+                this.ctx.strokeStyle = '#000000';
+                this.ctx.strokeRect(barX, barY, barWidth, barHeight);
+            }
+        }
+
+        let gameRenderer;
+        let gameLoop;
+
+        async function initGame() {
+            gameRenderer = new GameRenderer();
+            
+            // Start game loop
+            gameLoop = setInterval(() => {
+                gameRenderer.render();
+            }, 1000 / 60); // 60 FPS
+
+            // Update game state periodically
+            setInterval(() => {
+                gameRenderer.updateGameState();
+            }, 50); // 20 times per second
+        }
+
+        async function resetGame() {
+            try {
+                const response = await fetch('/api/game/reset', {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    gameRenderer.gameState = await response.json();
+                    gameRenderer.updateStatus();
+                }
+            } catch (error) {
+                console.error('Error resetting game:', error);
+            }
+        }
+
+        // Initialize game when page loads
+        window.addEventListener('load', initGame);
+    </script>
+</body>
+</html> 
