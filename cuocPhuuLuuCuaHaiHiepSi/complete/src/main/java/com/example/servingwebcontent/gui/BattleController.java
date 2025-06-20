@@ -4,7 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-import Classes.Platforms;
+import com.example.servingwebcontent.Classes.Platforms;
 
 public class BattleController {
     private final BattleModel model;
@@ -234,5 +234,8 @@ public class BattleController {
             case KeyEvent.VK_A -> model.movingLeft = false;
             case KeyEvent.VK_D -> model.movingRight = false;
         }
+    }
+    private void showWinner(String winnerName) {
+        JOptionPane.showMessageDialog(view, "Người chiến thắng là: " + winnerName, "Chiến thắng", JOptionPane.INFORMATION_MESSAGE);
     }
 }

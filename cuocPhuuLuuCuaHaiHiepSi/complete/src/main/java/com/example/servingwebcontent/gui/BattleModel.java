@@ -1,7 +1,7 @@
 package com.example.servingwebcontent.gui;
 
-import Classes.*;
-import texture.AnimationHandler;
+import com.example.servingwebcontent.Classes.*;
+import com.example.servingwebcontent.texture.AnimationHandler;
 import java.util.ArrayList;
 import java.util.List;
 
