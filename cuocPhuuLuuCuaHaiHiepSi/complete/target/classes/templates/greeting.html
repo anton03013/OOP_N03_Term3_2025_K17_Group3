@@ -1,10 +1,35 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head> 
-    <title>Getting Started: Serving Web Content</title> 
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<head>
+    <title>Game Platformer</title>
+    <meta charset="UTF-8" />
+    <style>
+        canvas { border: 1px solid #333; background: #eee; }
+    </style>
 </head>
 <body>
-    <p th:text="|Hello, ${name}!|" />
+    <h2>Game Platformer</h2>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <br>
+    <button onclick="startGame()">Start</button>
+    <button onclick="pauseGame()">Pause</button>
+    <script>
+        // JavaScript để vẽ và điều khiển game sẽ viết ở đây
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        // Ví dụ vẽ 1 platform
+        function drawPlatform(x, y, w, h) {
+            ctx.fillStyle = '#888';
+            ctx.fillRect(x, y, w, h);
+        }
+        function startGame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawPlatform(100, 500, 200, 20);
+            // Thêm vẽ player, enemy, animation...
+        }
+        function pauseGame() {
+            // Xử lý tạm dừng game
+        }
+    </script>
 </body>
 </html>
