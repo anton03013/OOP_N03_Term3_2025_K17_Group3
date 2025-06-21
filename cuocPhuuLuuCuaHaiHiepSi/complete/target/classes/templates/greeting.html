@@ -1,13 +1,108 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Game Platformer</title>
+    <meta charset="UTF-8" />
+    <style>
+        canvas { border: 1px solid #333; background: #eee; }
+        #controls { margin-top: 10px; }
+    </style>
 </head>
 <body>
-    <div>
-        <h1>Welcome to the Adventure of Two Heroes!</h1>
-        <p>Join us in an epic journey filled with challenges and triumphs.</p>
+    <h2>Game Platformer</h2>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <div id="controls">
+        <button onclick="startGame()">Start</button>
+        <button onclick="pauseGame()">Pause</button>
+    </div>
+    <script>
+        // --- Khởi tạo ---
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        let running = false;
+        let animationId;
+
+        // --- Định nghĩa các đối tượng game ---
+        const player = {
+            x: 120, y: 480, w: 40, h: 60, color: '#3498db', vy: 0, onGround: false
+        };
+        const platforms = [
+            {x: 100, y: 540, w: 200, h: 20},
+            {x: 350, y: 400, w: 150, h: 20},
+            {x: 600, y: 300, w: 120, h: 20}
+        ];
+
+        // --- Vẽ platform ---
+        function drawPlatform(p) {
+            ctx.fillStyle = '#888';
+            ctx.fillRect(p.x, p.y, p.w, p.h);
+        }
+
+        // --- Vẽ player ---
+        function drawPlayer() {
+            ctx.fillStyle = player.color;
+            ctx.fillRect(player.x, player.y, player.w, player.h);
+        }
+
+        // --- Vẽ toàn bộ game ---
+        function drawGame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            platforms.forEach(drawPlatform);
+            drawPlayer();
+        }
+
+        // --- Xử lý di chuyển và va chạm đơn giản ---
+        function updateGame() {
+            // Gravity
+            player.vy += 1.2;
+            player.y += player.vy;
+            player.onGround = false;
+            // Kiểm tra va chạm với platform
+            platforms.forEach(p => {
+                if (
+                    player.x < p.x + p.w &&
+                    player.x + player.w > p.x &&
+                    player.y + player.h > p.y &&
+                    player.y + player.h < p.y + p.h + 10 &&
+                    player.vy >= 0
+                ) {
+                    player.y = p.y - player.h;
+                    player.vy = 0;
+                    player.onGround = true;
+                }
+            });
+        }
+
+        // --- Vòng lặp game ---
+        function gameLoop() {
+            updateGame();
+            drawGame();
+            if (running) {
+                animationId = requestAnimationFrame(gameLoop);
+            }
+        }
+
+        // --- Điều khiển ---
+        document.addEventListener('keydown', function(e) {
+            if (e.code === 'ArrowLeft') player.x -= 20;
+            if (e.code === 'ArrowRight') player.x += 20;
+            if (e.code === 'Space' && player.onGround) player.vy = -18;
+        });
+
+        // --- Nút Start/Pause ---
+        function startGame() {
+            if (!running) {
+                running = true;
+                gameLoop();
+            }
+        }
+        function pauseGame() {
+            running = false;
+            cancelAnimationFrame(animationId);
+        }
+
+        // --- Vẽ lần đầu ---
+        drawGame();
+    </script>
 </body>
 </html>
