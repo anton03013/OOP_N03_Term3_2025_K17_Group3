@@ -12,7 +12,7 @@ public class GameService {
     private Player p1;
     private Enemies e1;
     private boolean facingRight = true;
-    private int p1X = 50, p2X = 300, p1Y, groundY = 600;
+    private int p1X = 50, p2X = 300, p1Y, groundY = 500;
     private boolean jumping = false, movingLeft = false, movingRight = false;
     private boolean p1Hurt = false, e1Hurt = false, attacking = false;
     private int velocityY = 0, p1Width = 205, p2Width = 160;
@@ -23,7 +23,13 @@ public class GameService {
     private boolean enemyAttacking = false;
     private boolean gameOver = false;
     private String winner = null;
-    private Random random = new Random();
+    private boolean onPlatform = false; // Добавлено поле
+
+    // --- Новые поля для врага ---
+    private int enemyY = groundY - 100;
+    private int enemyVelocityY = 0;
+    private boolean enemyJumping = false;
+    private boolean enemyOnPlatform = false;
 
     public GameService() {
         initializeGame();
@@ -35,8 +41,8 @@ public class GameService {
         p1Y = groundY;
         
         // Initialize platforms
-        platforms.add(new Platforms(200, 600, 150, 10));
-        platforms.add(new Platforms(500, 500, 150, 10));
+        platforms.add(new Platforms(200, 200, 150, 10));
+        platforms.add(new Platforms(500, 350, 150, 10));
     }
 
     public GameState getGameState() {
@@ -56,8 +62,8 @@ public class GameService {
 
         PlayerState enemyState = new PlayerState(
             e1.getName(), e1.getHealth(), e1.getStrength(),
-            p2X, groundY - 100, enemyFacingRight, false, false,
-            false, enemyAttacking, e1Hurt, 0, getEnemyCurrentAnimation()
+            p2X, enemyY, enemyFacingRight, enemyMovingLeft, enemyMovingRight,
+            enemyJumping, enemyAttacking, e1Hurt, enemyVelocityY, getEnemyCurrentAnimation()
         );
 
         return new GameState(player1State, enemyState, platformStates, gameOver, winner, groundY);
@@ -77,9 +83,9 @@ public class GameService {
         }
 
         // Process jump
-        if (input.isKeyW() && !jumping && p1Y >= groundY) {
+        if (input.isKeyW() && !jumping && (p1Y >= groundY || onPlatform)) { // Изменено условие
             jumping = true;
-            velocityY = -15;
+            velocityY = -20;
         }
 
         // Process attack
@@ -115,17 +121,18 @@ public class GameService {
             p1X = Math.max(0, p1X - 10);
         }
         if (movingRight) {
-            p1X = Math.min(800 - 40, p1X + 10); // Assuming 800px width
+            p1X = Math.min(1280 - 40, p1X + 10); // 1280 вместо 800
         }
 
         // Platform collision
-        boolean onPlatform = false;
+        onPlatform = false;
+        int playerHeight = 0; // Используйте реальную высоту игрока!
         for (Platforms platform : platforms) {
             if (p1X + p1Width > platform.getX() && p1X < platform.getX() + platform.getWidth()) {
-                int playerFeet = p1Y + 100; // Approximate player height
-                if (velocityY >= 0 && playerFeet <= platform.getY() && 
+                int playerFeet = p1Y + playerHeight;
+                if (velocityY >= 0 && playerFeet <= platform.getY() &&
                     playerFeet + velocityY >= platform.getY()) {
-                    p1Y = platform.getY() - 100;
+                    p1Y = platform.getY() - playerHeight;
                     if (jumping) {
                         jumping = false;
                         velocityY = 0;
@@ -193,6 +200,49 @@ public class GameService {
             enemyFacingRight = true;
         } else if (enemyMovingLeft) {
             enemyFacingRight = false;
+        }
+
+        // --- Платформы и прыжки для врага ---
+        // Гравитация и прыжок
+        if (enemyJumping) {
+            enemyY += enemyVelocityY;
+            enemyVelocityY += 1;
+            if (enemyY >= groundY - 100) {
+                enemyY = groundY - 100;
+                enemyJumping = false;
+                enemyVelocityY = 0;
+            }
+        }
+
+        // Проверка платформ
+        enemyOnPlatform = false;
+        int enemyHeight = 100; // как у игрока
+        for (Platforms platform : platforms) {
+            if (p2X + p2Width > platform.getX() && p2X < platform.getX() + platform.getWidth()) {
+                int enemyFeet = enemyY + enemyHeight;
+                if (enemyVelocityY >= 0 && enemyFeet <= platform.getY() &&
+                    enemyFeet + enemyVelocityY >= platform.getY()) {
+                    enemyY = platform.getY() - enemyHeight;
+                    if (enemyJumping) {
+                        enemyJumping = false;
+                        enemyVelocityY = 0;
+                    }
+                    enemyOnPlatform = true;
+                    break;
+                }
+            }
+        }
+
+        if (!enemyOnPlatform && enemyY < groundY - 100) {
+            if (!enemyJumping) {
+                enemyJumping = true;
+            }
+        } else if (!enemyOnPlatform && enemyY >= groundY - 100) {
+            enemyY = groundY - 100;
+            if (enemyJumping) {
+                enemyJumping = false;
+                enemyVelocityY = 0;
+            }
         }
     }
 
@@ -309,4 +359,4 @@ public class GameService {
         enemyPauseTimer = 0;
         enemyAttacking = false;
     }
-} 
+}

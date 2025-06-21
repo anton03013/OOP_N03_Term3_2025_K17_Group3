@@ -7,11 +7,10 @@
     <style>
         body {
             margin: 0;
-            padding: 20px;
+            padding: 0;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            font-family: 'Arial', sans-serif;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
             min-height: 100vh;
         }
@@ -19,7 +18,7 @@
         .game-container {
             background: rgba(255, 255, 255, 0.1);
             border-radius: 15px;
-            padding: 20px;
+            padding: 0;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(10px);
         }
@@ -29,75 +28,14 @@
             border-radius: 10px;
             background: linear-gradient(to bottom, #87CEEB 0%, #98FB98 100%);
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .controls {
-            margin-top: 20px;
-            text-align: center;
-            color: white;
-        }
-
-        .controls h3 {
-            margin: 0 0 10px 0;
-            font-size: 18px;
-        }
-
-        .controls p {
-            margin: 5px 0;
-            font-size: 14px;
-        }
-
-        .status {
-            margin-top: 15px;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            color: white;
-            text-align: center;
-        }
-
-        .reset-btn {
-            margin-top: 15px;
-            padding: 10px 20px;
-            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
-            color: white;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            transition: transform 0.2s;
-        }
-
-        .reset-btn:hover {
-            transform: scale(1.05);
-        }
-
-        .winner {
-            font-size: 24px;
-            font-weight: bold;
-            color: #ffd700;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            display: block;
         }
     </style>
 </head>
 <body>
     <div class="game-container">
-        <canvas id="gameCanvas" width="800" height="600"></canvas>
-        <div class="status" id="status">
-            <div id="player1Status">Player 1: HP 100</div>
-            <div id="enemyStatus">Enemy: HP 100</div>
-        </div>
-        <button class="reset-btn" onclick="resetGame()">Reset Game</button>
+        <canvas id="gameCanvas" width="1280" height="600"></canvas>
     </div>
-
-    <div class="controls">
-        <h3>Controls:</h3>
-        <p>A/D - Move Left/Right</p>
-        <p>W - Jump</p>
-        <p>Space - Attack</p>
-    </div>
-
     <script>
         class AnimationHandler {
             constructor(imagePath, frameWidth, frameHeight, rows, cols, frameDelay) {
@@ -127,14 +65,19 @@
                 ctx.save();
                 if (!facingRight) {
                     ctx.scale(-1, 1);
-                    ctx.translate(-x - this.frameWidth, 0);
+                    ctx.translate(-(x + this.frameWidth), 0);
+                    ctx.drawImage(
+                        this.image,
+                        frameX, frameY, this.frameWidth, this.frameHeight,
+                        0, y, this.frameWidth, this.frameHeight
+                    );
+                } else {
+                    ctx.drawImage(
+                        this.image,
+                        frameX, frameY, this.frameWidth, this.frameHeight,
+                        x, y, this.frameWidth, this.frameHeight
+                    );
                 }
-
-                ctx.drawImage(
-                    this.image,
-                    frameX, frameY, this.frameWidth, this.frameHeight,
-                    x, y, this.frameWidth, this.frameHeight
-                );
                 ctx.restore();
             }
         }
@@ -148,9 +91,23 @@
                 this.totalTextures = 8;
                 this.gameState = null;
                 this.keys = {};
-                
+
+                // --- Добавьте загруз tải hình nền ---
+                this.backgrounds = [
+                    this.loadImage('/texture/Background/background1.png'),
+                    this.loadImage('/texture/Background/background2.png'),
+                    this.loadImage('/texture/Background/background3.png'),
+                    this.loadImage('/texture/Background/background4.png')
+                ];
+
                 this.setupEventListeners();
                 this.loadTextures();
+            }
+
+            loadImage(src) {
+                const img = new Image();
+                img.src = src;
+                return img;
             }
 
             setupEventListeners() {
@@ -204,7 +161,6 @@
                     
                     if (response.ok) {
                         this.gameState = await response.json();
-                        this.updateStatus();
                     }
                 } catch (error) {
                     console.error('Error sending input:', error);
@@ -216,39 +172,24 @@
                     const response = await fetch('/api/game/state');
                     if (response.ok) {
                         this.gameState = await response.json();
-                        this.updateStatus();
                     }
                 } catch (error) {
                     console.error('Error updating game state:', error);
                 }
             }
 
-            updateStatus() {
-                if (!this.gameState) return;
-
-                const player1 = this.gameState.player1;
-                const enemy = this.gameState.enemy;
-
-                document.getElementById('player1Status').textContent = 
-                    `${player1.name}: HP ${player1.health}`;
-                document.getElementById('enemyStatus').textContent = 
-                    `${enemy.name}: HP ${enemy.health}`;
-
-                if (this.gameState.gameOver) {
-                    const statusDiv = document.getElementById('status');
-                    statusDiv.innerHTML = `<div class="winner">Winner: ${this.gameState.winner}!</div>`;
-                }
-            }
-
             render() {
                 if (!this.gameState) return;
 
-                // Clear canvas
+                // Очистить canvas
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-                // Draw background
-                this.ctx.fillStyle = '#87CEEB';
-                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                // Нарисовать все фоны слоями
+                for (const bg of this.backgrounds) {
+                    if (bg.complete && bg.naturalWidth > 0) {
+                        this.ctx.drawImage(bg, 0, 0, this.canvas.width, this.canvas.height);
+                    }
+                }
 
                 // Draw ground
                 this.ctx.fillStyle = '#8B4513';
@@ -262,7 +203,7 @@
 
                 // Draw player
                 this.drawPlayer(this.gameState.player1);
-                
+
                 // Draw enemy
                 this.drawPlayer(this.gameState.enemy, true);
             }
@@ -318,55 +259,34 @@
             const barX = playerState.x;
             const barY = playerState.y - 100;
 
-            // Background
-            this.ctx.fillStyle = '#ff0000';
-            this.ctx.fillRect(barX, barY, barWidth, barHeight);
+                // Background
+                this.ctx.fillStyle = '#ff0000';
+                this.ctx.fillRect(barX, barY, barWidth, barHeight);
 
-            // Health
-            this.ctx.fillStyle = '#00ff00';
-            const healthWidth = (playerState.health / 100) * barWidth;
-            this.ctx.fillRect(barX, barY, healthWidth, barHeight);
+                // Health
+                this.ctx.fillStyle = '#00ff00';
+                const healthWidth = (playerState.health / 100) * barWidth;
+                this.ctx.fillRect(barX, barY, healthWidth, barHeight);
 
-            // Border
-            this.ctx.strokeStyle = '#000000';
-            this.ctx.strokeRect(barX, barY, barWidth, barHeight);
-        }
+                // Border
+                this.ctx.strokeStyle = '#000000';
+                this.ctx.strokeRect(barX, barY, barWidth, barHeight);
+            }
         }
 
         let gameRenderer;
         let gameLoop;
-
         async function initGame() {
             gameRenderer = new GameRenderer();
-            
-            // Start game loop
             gameLoop = setInterval(() => {
+                gameRenderer.sendInput(); // <--- добавьте сюда!
                 gameRenderer.render();
-            }, 1000 / 60); // 60 FPS
-
-            // Update game state periodically
+            }, 1000 / 60);
             setInterval(() => {
                 gameRenderer.updateGameState();
-            }, 50); // 20 times per second
+            }, 50);
         }
-
-        async function resetGame() {
-            try {
-                const response = await fetch('/api/game/reset', {
-                    method: 'POST'
-                });
-                
-                if (response.ok) {
-                    gameRenderer.gameState = await response.json();
-                    gameRenderer.updateStatus();
-                }
-            } catch (error) {
-                console.error('Error resetting game:', error);
-            }
-        }
-
-        // Initialize game when page loads
         window.addEventListener('load', initGame);
     </script>
 </body>
-</html> 
+</html>
