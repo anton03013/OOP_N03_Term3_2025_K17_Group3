@@ -268,53 +268,69 @@
             }
 
             drawPlayer(playerState, isEnemy = false) {
-                let animation;
-                const prefix = isEnemy ? 'enemy' : 'player';
-                
-                switch (playerState.currentAnimation) {
-                    case 'idle':
-                        animation = this.animations[prefix + 'Idle'];
-                        break;
-                    case 'run':
-                        animation = this.animations[prefix + 'Run'];
-                        break;
-                    case 'attack':
-                        animation = this.animations[prefix + 'Attack'];
-                        break;
-                    case 'hurt':
-                        animation = this.animations[prefix + 'Hurt'];
-                        break;
-                    case 'jump':
-                        animation = this.animations[prefix + 'Jump'];
-                        break;
-                    default:
-                        animation = this.animations[prefix + 'Idle'];
-                }
+            let animation;
+            const prefix = isEnemy ? 'enemy' : 'player';
 
-                if (animation && animation.image.complete) {
-                    animation.update();
-                    animation.draw(this.ctx, playerState.x, playerState.y - 75, playerState.facingRight);
-                }
-
-                // Draw health bar
-                const barWidth = 100;
-                const barHeight = 10;
-                const barX = playerState.x;
-                const barY = playerState.y - 100;
-
-                // Background
-                this.ctx.fillStyle = '#ff0000';
-                this.ctx.fillRect(barX, barY, barWidth, barHeight);
-
-                // Health
-                this.ctx.fillStyle = '#00ff00';
-                const healthWidth = (playerState.health / 100) * barWidth;
-                this.ctx.fillRect(barX, barY, healthWidth, barHeight);
-
-                // Border
-                this.ctx.strokeStyle = '#000000';
-                this.ctx.strokeRect(barX, barY, barWidth, barHeight);
+            // Lưu trạng thái animation trước đó
+            if (!playerState._lastAnimation) playerState._lastAnimation = '';
+            let animationName = '';
+            switch (playerState.currentAnimation) {
+                case 'idle':
+                    animation = this.animations[prefix + 'Idle'];
+                    animationName = prefix + 'Idle';
+                    break;
+                case 'run':
+                    animation = this.animations[prefix + 'Run'];
+                    animationName = prefix + 'Run';
+                    break;
+                case 'attack':
+                    animation = this.animations[prefix + 'Attack'];
+                    animationName = prefix + 'Attack';
+                    break;
+                case 'hurt':
+                    animation = this.animations[prefix + 'Hurt'];
+                    animationName = prefix + 'Hurt';
+                    break;
+                case 'jump':
+                    animation = this.animations[prefix + 'Jump'];
+                    animationName = prefix + 'Jump';
+                    break;
+                default:
+                    animation = this.animations[prefix + 'Idle'];
+                    animationName = prefix + 'Idle';
             }
+
+            // Nếu animation thay đổi thì reset frame
+            if (playerState._lastAnimation !== animationName && animation) {
+                animation.currentFrame = 0;
+                animation.frameCounter = 0;
+                playerState._lastAnimation = animationName;
+            }
+
+            if (animation && animation.image.complete) {
+                animation.update();
+                animation.draw(this.ctx, playerState.x, playerState.y - 75, playerState.facingRight);
+            }
+
+            // Draw health bar
+            const barWidth = 100;
+            const barHeight = 10;
+            const barX = playerState.x;
+            const barY = playerState.y - 100;
+
+            // Background
+            this.ctx.fillStyle = '#ff0000';
+            this.ctx.fillRect(barX, barY, barWidth, barHeight);
+
+            // Health
+            this.ctx.fillStyle = '#00ff00';
+            const healthWidth = (playerState.health / 100) * barWidth;
+            this.ctx.fillRect(barX, barY, healthWidth, barHeight);
+
+            // Border
+            this.ctx.strokeStyle = '#000000';
+            this.ctx.strokeRect(barX, barY, barWidth, barHeight);
+        }
         }
 
         let gameRenderer;
