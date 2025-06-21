@@ -18,9 +18,9 @@ public class PlayerState {
     public PlayerState() {}
 
     public PlayerState(String name, int health, int strength, int x, int y, 
-                      boolean facingRight, boolean movingLeft, boolean movingRight,
-                      boolean jumping, boolean attacking, boolean hurt, 
-                      int velocityY, String currentAnimation) {
+                    boolean facingRight, boolean movingLeft, boolean movingRight,
+                    boolean jumping, boolean attacking, boolean hurt, 
+                    int velocityY, String currentAnimation) {
         this.name = name;
         this.health = health;
         this.strength = strength;
