@@ -92,8 +92,22 @@
                 this.gameState = null;
                 this.keys = {};
 
+                // --- Добавьте загруз tải hình nền ---
+                this.backgrounds = [
+                    this.loadImage('/texture/Background/background1.png'),
+                    this.loadImage('/texture/Background/background2.png'),
+                    this.loadImage('/texture/Background/background3.png'),
+                    this.loadImage('/texture/Background/background4.png')
+                ];
+
                 this.setupEventListeners();
                 this.loadTextures();
+            }
+
+            loadImage(src) {
+                const img = new Image();
+                img.src = src;
+                return img;
             }
 
             setupEventListeners() {
@@ -167,12 +181,15 @@
             render() {
                 if (!this.gameState) return;
 
-                // Clear canvas
+                // Очистить canvas
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-                // Draw background
-                this.ctx.fillStyle = '#87CEEB';
-                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                // Нарисовать все фоны слоями
+                for (const bg of this.backgrounds) {
+                    if (bg.complete && bg.naturalWidth > 0) {
+                        this.ctx.drawImage(bg, 0, 0, this.canvas.width, this.canvas.height);
+                    }
+                }
 
                 // Draw ground
                 this.ctx.fillStyle = '#8B4513';
@@ -186,7 +203,7 @@
 
                 // Draw player
                 this.drawPlayer(this.gameState.player1);
-                
+
                 // Draw enemy
                 this.drawPlayer(this.gameState.enemy, true);
             }
