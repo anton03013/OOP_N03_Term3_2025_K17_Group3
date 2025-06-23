@@ -37,6 +37,7 @@
         <canvas id="gameCanvas" width="1280" height="600"></canvas>
     </div>
     <script>
+        // AnimationHandler handles sprite animation
         class AnimationHandler {
             constructor(imagePath, frameWidth, frameHeight, rows, cols, frameDelay) {
                 this.image = new Image();
@@ -82,24 +83,20 @@
             }
         }
 
+        // GameRenderer handles rendering and input
         class GameRenderer {
             constructor() {
                 this.canvas = document.getElementById('gameCanvas');
                 this.ctx = this.canvas.getContext('2d');
                 this.animations = {};
-                this.loadedTextures = 0;
-                this.totalTextures = 8;
-                this.gameState = null;
-                this.keys = {};
-
-                // --- Добавьте загруз tải hình nền ---
                 this.backgrounds = [
                     this.loadImage('/texture/Background/background1.png'),
                     this.loadImage('/texture/Background/background2.png'),
                     this.loadImage('/texture/Background/background3.png'),
                     this.loadImage('/texture/Background/background4.png')
                 ];
-
+                this.gameState = null;
+                this.keys = {};
                 this.setupEventListeners();
                 this.loadTextures();
             }
@@ -181,15 +178,49 @@
             render() {
                 if (!this.gameState) return;
 
-                // Очистить canvas
+             
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-                // Нарисовать все фоны слоями
+            
                 for (const bg of this.backgrounds) {
                     if (bg.complete && bg.naturalWidth > 0) {
                         this.ctx.drawImage(bg, 0, 0, this.canvas.width, this.canvas.height);
                     }
                 }
+
+                // --- Нарисовать полоски здоровья в левом верхнем углу ---
+                const barWidth = 200;
+                const barHeight = 20;
+                const padding = 20;
+
+                // Игрок 1
+                this.ctx.fillStyle = '#000000';
+                this.ctx.fillRect(padding - 2, padding - 2, barWidth + 4, barHeight + 4);
+                this.ctx.fillStyle = '#ff0000';
+                this.ctx.fillRect(padding, padding, barWidth, barHeight);
+                this.ctx.fillStyle = '#00ff00';
+                const healthWidth1 = Math.max(0, (this.gameState.player1.health / 100) * barWidth);
+                this.ctx.fillRect(padding, padding, healthWidth1, barHeight);
+                this.ctx.strokeStyle = '#ffffff';
+                this.ctx.strokeRect(padding, padding, barWidth, barHeight);
+                this.ctx.fillStyle = '#fff';
+                this.ctx.font = '16px Arial';
+                this.ctx.fillText(this.gameState.player1.name + ' HP', padding, padding + barHeight + 16);
+
+                // Враг (чуть ниже)
+                const enemyBarY = padding + barHeight + 24;
+                this.ctx.fillStyle = '#000000';
+                this.ctx.fillRect(padding - 2, enemyBarY - 2, barWidth + 4, barHeight + 4);
+                this.ctx.fillStyle = '#ff0000';
+                this.ctx.fillRect(padding, enemyBarY, barWidth, barHeight);
+                this.ctx.fillStyle = '#00ff00';
+                const healthWidth2 = Math.max(0, (this.gameState.enemy.health / 100) * barWidth);
+                this.ctx.fillRect(padding, enemyBarY, healthWidth2, barHeight);
+                this.ctx.strokeStyle = '#ffffff';
+                this.ctx.strokeRect(padding, enemyBarY, barWidth, barHeight);
+                this.ctx.fillStyle = '#fff';
+                this.ctx.font = '16px Arial';
+                this.ctx.fillText(this.gameState.enemy.name + ' HP', padding, enemyBarY + barHeight + 16);
 
                 // Draw ground
                 this.ctx.fillStyle = '#8B4513';
@@ -202,56 +233,46 @@
                 }
 
                 // Draw player
-                this.drawPlayer(this.gameState.player1);
+                this.drawPlayerCharacter(this.gameState.player1);
 
                 // Draw enemy
-                this.drawPlayer(this.gameState.enemy, true);
+                this.drawEnemyCharacter(this.gameState.enemy);
             }
 
-            drawPlayer(playerState, isEnemy = false) {
+            drawPlayerCharacter(playerState) {
                 let animation;
-                const prefix = isEnemy ? 'enemy' : 'player';
-                
                 switch (playerState.currentAnimation) {
-                    case 'idle':
-                        animation = this.animations[prefix + 'Idle'];
-                        break;
-                    case 'run':
-                        animation = this.animations[prefix + 'Run'];
-                        break;
-                    case 'attack':
-                        animation = this.animations[prefix + 'Attack'];
-                        break;
-                    case 'hurt':
-                        animation = this.animations[prefix + 'Hurt'];
-                        break;
-                    case 'jump':
-                        animation = this.animations[prefix + 'Jump'];
-                        break;
-                    default:
-                        animation = this.animations[prefix + 'Idle'];
+                    case 'idle': animation = this.animations['playerIdle']; break;
+                    case 'run': animation = this.animations['playerRun']; break;
+                    case 'attack': animation = this.animations['playerAttack']; break;
+                    case 'hurt': animation = this.animations['playerHurt']; break;
+                    case 'jump': animation = this.animations['playerJump']; break;
+                    default: animation = this.animations['playerIdle'];
                 }
-
                 if (animation && animation.image.complete) {
                     animation.update();
-                    animation.draw(this.ctx, playerState.x, playerState.y - 75, playerState.facingRight);
+                    let yOffset = -75; // только для игрока
+                    let xOffset = 0;   // если нужно
+                    animation.draw(this.ctx, playerState.x + xOffset, playerState.y + yOffset, playerState.facingRight);
                 }
+            }
 
-                // Draw health bar
-                const barWidth = 100;
-                const barHeight = 10;
-                const barX = playerState.x;
-                const barY = playerState.y - 100;
-
-                this.ctx.fillStyle = '#ff0000';
-                this.ctx.fillRect(barX, barY, barWidth, barHeight);
-
-                this.ctx.fillStyle = '#00ff00';
-                const healthWidth = (playerState.health / 100) * barWidth;
-                this.ctx.fillRect(barX, barY, healthWidth, barHeight);
-
-                this.ctx.strokeStyle = '#000000';
-                this.ctx.strokeRect(barX, barY, barWidth, barHeight);
+            drawEnemyCharacter(enemyState) {
+                let animation;
+                switch (enemyState.currentAnimation) {
+                    case 'idle': animation = this.animations['enemyIdle']; break;
+                    case 'run': animation = this.animations['enemyRun']; break;
+                    case 'attack': animation = this.animations['enemyAttack']; break;
+                    case 'hurt': animation = this.animations['enemyHurt']; break;
+                    case 'jump': animation = this.animations['enemyJump']; break;
+                    default: animation = this.animations['enemyIdle'];
+                }
+                if (animation && animation.image.complete) {
+                    animation.update();
+                    let yOffset = -300; // только для врага
+                    let xOffset = -300;   // если нужно
+                    animation.draw(this.ctx, enemyState.x + xOffset, enemyState.y + yOffset, enemyState.facingRight);
+                }
             }
         }
 

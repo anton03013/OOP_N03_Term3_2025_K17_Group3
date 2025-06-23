@@ -5,8 +5,8 @@ import java.util.Random;
 public class Player {
     private String name;
     private int health;
-    private int strength; 
-    private Random critical_rate = new Random();
+    private int strength;
+    private Random criticalRate = new Random();
 
     public Player(String name, int health, int strength) {
         this.name = name;
@@ -16,7 +16,7 @@ public class Player {
 
     public String getName() { return name; }
     public int getHealth() { return health; }
-    public int getStrength() { return strength; } 
+    public int getStrength() { return strength; }
 
     public void setHealth(int health) {
         this.health = Math.max(0, health);
@@ -31,8 +31,9 @@ public class Player {
     }
 
     public void attack(Player target) {
-        int damage = strength; 
-        if (critical_rate.nextInt(100) < 25) {
+        int damage = strength;
+        // 25% chance for critical hit
+        if (criticalRate.nextInt(100) < 25) {
             damage *= 2;
             System.out.println(name + " lands a CRITICAL HIT!");
         }

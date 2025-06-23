@@ -30,6 +30,6 @@ public class Platforms {
     }
     public void draw(Graphics g) {
         g.setColor(Color.GRAY);
-        g.fillRect(x - 100, y+25,width + 190, height);
+        g.fillRect(x - 100, y + 25, width + 190, height);
     }
 }

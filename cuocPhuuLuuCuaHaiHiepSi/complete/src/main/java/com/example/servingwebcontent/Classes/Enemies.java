@@ -1,13 +1,12 @@
 package com.example.servingwebcontent.Classes;
 
-
 import java.util.Random;
 
 public class Enemies extends Player {
     private int strength;
 
     public Enemies(String name, int health, int strength) {
-        super(name, health, strength); 
+        super(name, health, strength);
         this.strength = strength;
     }
 
@@ -24,6 +23,6 @@ public class Enemies extends Player {
 
     @Override
     public void printStatus() {
-        System.out.println("Warrior: " + getName() + ", Health: " + getHealth() + ", Strength: " + strength);
+        System.out.println("Enemy: " + getName() + ", Health: " + getHealth() + ", Strength: " + strength);
     }
 }
