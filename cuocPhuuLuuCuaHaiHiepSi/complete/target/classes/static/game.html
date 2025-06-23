@@ -92,7 +92,7 @@
                 this.gameState = null;
                 this.keys = {};
 
-                // --- Tải hình nền ---
+                // --- Добавьте загруз tải hình nền ---
                 this.backgrounds = [
                     this.loadImage('/texture/Background/background1.png'),
                     this.loadImage('/texture/Background/background2.png'),
@@ -181,10 +181,10 @@
             render() {
                 if (!this.gameState) return;
 
-                // Oчистить canvas
+                // Очистить canvas
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-                // Vẽ tất cả các nền theo lớp
+                // Нарисовать все фоны слоями
                 for (const bg of this.backgrounds) {
                     if (bg.complete && bg.naturalWidth > 0) {
                         this.ctx.drawImage(bg, 0, 0, this.canvas.width, this.canvas.height);
@@ -206,15 +206,6 @@
 
                 // Draw enemy
                 this.drawPlayer(this.gameState.enemy, true);
-
-                // Kiểm tra và reset khi HP = 0
-                const player1 = this.gameState.player1;
-                const enemy = this.gameState.enemy;
-                if (player1.health <= 0 || enemy.health <= 0) {
-                    setTimeout(() => {
-                        resetGame();
-                    }, 3000); // Đợi 1 giây trước khi reset
-                }
             }
 
             drawPlayer(playerState, isEnemy = false) {
@@ -246,13 +237,13 @@
                     animation.draw(this.ctx, playerState.x, playerState.y - 75, playerState.facingRight);
                 }
 
-                // Draw fixed health bar at top-left corner
-                const barWidth = 180;
-                const barHeight =15;
-                const barX = 10; // Fixed position
-                const barY = isEnemy ? 30 : 10; // Fixed positions for Player and Enemy
+                // Draw health bar
+                const barWidth = 100;
+                const barHeight = 10;
+                const barX = playerState.x;
+                const barY = playerState.y - 100;
 
-                this.ctx.fillStyle = '#808080';
+                this.ctx.fillStyle = '#ff0000';
                 this.ctx.fillRect(barX, barY, barWidth, barHeight);
 
                 this.ctx.fillStyle = '#00ff00';
@@ -261,10 +252,6 @@
 
                 this.ctx.strokeStyle = '#000000';
                 this.ctx.strokeRect(barX, barY, barWidth, barHeight);
-
-                this.ctx.fillStyle = 'red';
-                this.ctx.font = 'px Arial';
-                this.ctx.fillText(`${playerState.name}: HP ${playerState.health}`, barX + 5, barY + 10);
             }
         }
 
@@ -273,28 +260,13 @@
         async function initGame() {
             gameRenderer = new GameRenderer();
             gameLoop = setInterval(() => {
-                gameRenderer.sendInput();
+                gameRenderer.sendInput(); // <--- добавьте сюда!
                 gameRenderer.render();
             }, 1000 / 60);
             setInterval(() => {
                 gameRenderer.updateGameState();
-            }, 100);
+            }, 50);
         }
-
-        async function resetGame() {
-            try {
-                const response = await fetch('/api/game/reset', {
-                    method: 'POST'
-                });
-                
-                if (response.ok) {
-                    gameRenderer.gameState = await response.json();
-                }
-            } catch (error) {
-                console.error('Error resetting game:', error);
-            }
-        }
-
         window.addEventListener('load', initGame);
     </script>
 </body>
