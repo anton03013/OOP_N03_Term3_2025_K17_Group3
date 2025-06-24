@@ -47,7 +47,8 @@ public class GameController {
             "/texture/Nightborne/Attack.png",
             "/texture/Background/background1.png",
             "/texture/Background/background2.png",
-            "/texture/Background/background3.png"
+            "/texture/Background/background3.png",
+            "/texture/Background/background4a.png"
         };
         return ResponseEntity.ok(textures);
     }

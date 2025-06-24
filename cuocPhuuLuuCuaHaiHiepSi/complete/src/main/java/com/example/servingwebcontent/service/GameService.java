@@ -33,6 +33,7 @@ public class GameService {
     private int enemyHitboxOffsetY = -300;
     private int enemyHitboxWidth = p2Width;
     private int enemyHitboxHeight = 160;
+    private boolean enemyFrozen = false;
 
     public GameService() {
         initializeGame();
@@ -104,13 +105,13 @@ public class GameService {
             }
         }
         if (movingLeft) {
-            p1X = Math.max(0, p1X - 10);
+            p1X = Math.max(0-100, p1X - 10);
         }
         if (movingRight) {
-            p1X = Math.min(1280 - 40, p1X + 10);
+            p1X = Math.min(1280 - 100, p1X + 10);
         }
         onPlatform = false;
-        int playerHeight = 0; // TODO: set real player height
+        int playerHeight = 0; // Set real player height if needed
         for (Platforms platform : platforms) {
             if (p1X + p1Width > platform.getX() && p1X < platform.getX() + platform.getWidth()) {
                 int playerFeet = p1Y + playerHeight;
@@ -140,6 +141,7 @@ public class GameService {
     }
 
     private void updateEnemy() {
+        if (enemyFrozen) return;
         int leftBound = 350;
         int rightBound = 650;
         if (enemyPauseTimer > 0) {
@@ -184,7 +186,7 @@ public class GameService {
             }
         }
         enemyOnPlatform = false;
-        int enemyHeight = 100; // TODO: set real enemy height
+        int enemyHeight = 100; // Set real enemy height if needed
         for (Platforms platform : platforms) {
             if (p2X + p2Width > platform.getX() && p2X < platform.getX() + platform.getWidth()) {
                 int enemyFeet = enemyY + enemyHeight;
@@ -236,13 +238,19 @@ public class GameService {
     private void scheduleEnemyAttack() {
         new Thread(() -> {
             try {
-                Thread.sleep(500);
+                enemyFrozen = true;
+                enemyMovingLeft = false;
+                enemyMovingRight = false;
+                enemyAttacking = true;
+                e1Hurt = true;
+
+                Thread.sleep(800);
+
                 int enemyHitboxX = p2X + enemyHitboxOffsetX;
                 int enemyHitboxY = enemyY + enemyHitboxOffsetY;
                 boolean xOverlap = (p1X + p1Width > enemyHitboxX) && (p1X < enemyHitboxX + enemyHitboxWidth);
                 boolean yOverlap = (p1Y < enemyHitboxY + enemyHitboxHeight) && (p1Y + 114 > enemyHitboxY);
                 if (!gameOver && xOverlap && yOverlap) {
-                    enemyAttacking = true;
                     e1.attack(p1);
                     if (!p1.isAlive()) {
                         gameOver = true;
@@ -250,11 +258,15 @@ public class GameService {
                         return;
                     }
                     p1Hurt = true;
-                    Thread.sleep(1500);
-                    enemyAttacking = false;
+                    Thread.sleep(700); // Short player hurt animation
                     p1Hurt = false;
                 }
+
+                enemyAttacking = false;
                 e1Hurt = false;
+                enemyFrozen = false;
+                enemyMovingRight = true;
+
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
@@ -273,7 +285,7 @@ public class GameService {
     }
 
     private void checkCollisions() {
-        // Add collision logic if needed
+        // Implement collision logic if needed
     }
 
     private void checkGameOver() {
@@ -292,8 +304,8 @@ public class GameService {
     }
 
     private String getEnemyCurrentAnimation() {
-        if (e1Hurt) return "hurt";
         if (enemyAttacking) return "attack";
+        if (e1Hurt) return "hurt";
         if (enemyMovingLeft || enemyMovingRight) return "run";
         return "idle";
     }
