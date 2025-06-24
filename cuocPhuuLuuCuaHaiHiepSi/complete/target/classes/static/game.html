@@ -4,40 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cuộc Phiêu Lưu Của Hai Hiệp Sĩ</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        .game-container {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 0;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
-        }
-
-        canvas {
-            border: 3px solid #fff;
-            border-radius: 10px;
-            background: linear-gradient(to bottom, #87CEEB 0%, #98FB98 100%);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            display: block;
-        }
-    </style>
+    <link rel="stylesheet" href="game.css">
 </head>
 <body>
     <div class="game-container">
         <canvas id="gameCanvas" width="1280" height="600"></canvas>
     </div>
     <script>
-        // AnimationHandler handles sprite animation
+        // Handles sprite animation
         class AnimationHandler {
             constructor(imagePath, frameWidth, frameHeight, rows, cols, frameDelay) {
                 this.image = new Image();
@@ -50,7 +24,6 @@
                 this.currentFrame = 0;
                 this.frameCounter = 0;
             }
-
             update() {
                 this.frameCounter++;
                 if (this.frameCounter >= this.frameDelay) {
@@ -58,11 +31,9 @@
                     this.currentFrame = (this.currentFrame + 1) % (this.rows * this.cols);
                 }
             }
-
             draw(ctx, x, y, facingRight) {
                 const frameX = (this.currentFrame % this.cols) * this.frameWidth;
                 const frameY = Math.floor(this.currentFrame / this.cols) * this.frameHeight;
-
                 ctx.save();
                 if (!facingRight) {
                     ctx.scale(-1, 1);
@@ -83,7 +54,7 @@
             }
         }
 
-        // GameRenderer handles rendering and input
+        // Handles rendering and input
         class GameRenderer {
             constructor() {
                 this.canvas = document.getElementById('gameCanvas');
@@ -100,25 +71,21 @@
                 this.setupEventListeners();
                 this.loadTextures();
             }
-
             loadImage(src) {
                 const img = new Image();
                 img.src = src;
                 return img;
             }
-
             setupEventListeners() {
                 document.addEventListener('keydown', (e) => {
                     this.keys[e.code] = true;
                     this.sendInput();
                 });
-
                 document.addEventListener('keyup', (e) => {
                     this.keys[e.code] = false;
                     this.sendInput();
                 });
             }
-
             async loadTextures() {
                 const textureConfigs = [
                     { name: 'playerIdle', path: '/texture/Sprites/Idle1.png', width: 205, height: 114, rows: 1, cols: 3, delay: 12 },
@@ -130,7 +97,6 @@
                     { name: 'enemyRun', path: '/texture/Nightborne/Run.png', width: 160, height: 160, rows: 1, cols: 6, delay: 6 },
                     { name: 'enemyAttack', path: '/texture/Nightborne/Attack.png', width: 160, height: 160, rows: 1, cols: 12, delay: 4 }
                 ];
-
                 for (const config of textureConfigs) {
                     this.animations[config.name] = new AnimationHandler(
                         config.path, config.width, config.height, 
@@ -138,7 +104,6 @@
                     );
                 }
             }
-
             async sendInput() {
                 const input = {
                     keyA: this.keys['KeyA'] || false,
@@ -146,7 +111,6 @@
                     keySpace: this.keys['Space'] || false,
                     keyW: this.keys['KeyW'] || false
                 };
-
                 try {
                     const response = await fetch('/api/game/input', {
                         method: 'POST',
@@ -155,7 +119,6 @@
                         },
                         body: JSON.stringify(input)
                     });
-                    
                     if (response.ok) {
                         this.gameState = await response.json();
                     }
@@ -163,7 +126,6 @@
                     console.error('Error sending input:', error);
                 }
             }
-
             async updateGameState() {
                 try {
                     const response = await fetch('/api/game/state');
@@ -174,26 +136,19 @@
                     console.error('Error updating game state:', error);
                 }
             }
-
             render() {
                 if (!this.gameState) return;
-
-             
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-            
                 for (const bg of this.backgrounds) {
                     if (bg.complete && bg.naturalWidth > 0) {
                         this.ctx.drawImage(bg, 0, 0, this.canvas.width, this.canvas.height);
                     }
                 }
-
-                // --- Нарисовать полоски здоровья в левом верхнем углу ---
+                // Draw health bars
                 const barWidth = 200;
                 const barHeight = 20;
                 const padding = 20;
-
-                // Игрок 1
+                // Player 1
                 this.ctx.fillStyle = '#000000';
                 this.ctx.fillRect(padding - 2, padding - 2, barWidth + 4, barHeight + 4);
                 this.ctx.fillStyle = '#ff0000';
@@ -206,8 +161,7 @@
                 this.ctx.fillStyle = '#fff';
                 this.ctx.font = '16px Arial';
                 this.ctx.fillText(this.gameState.player1.name + ' HP', padding, padding + barHeight + 16);
-
-                // Враг (чуть ниже)
+                // Enemy
                 const enemyBarY = padding + barHeight + 24;
                 this.ctx.fillStyle = '#000000';
                 this.ctx.fillRect(padding - 2, enemyBarY - 2, barWidth + 4, barHeight + 4);
@@ -221,24 +175,19 @@
                 this.ctx.fillStyle = '#fff';
                 this.ctx.font = '16px Arial';
                 this.ctx.fillText(this.gameState.enemy.name + ' HP', padding, enemyBarY + barHeight + 16);
-
                 // Draw ground
                 this.ctx.fillStyle = '#8B4513';
                 this.ctx.fillRect(0, this.gameState.groundY + 30, this.canvas.width, 5);
-
                 // Draw platforms
                 this.ctx.fillStyle = '#808080';
                 for (const platform of this.gameState.platforms) {
                     this.ctx.fillRect(platform.x - 100, platform.y + 25, platform.width + 190, platform.height);
                 }
-
                 // Draw player
                 this.drawPlayerCharacter(this.gameState.player1);
-
                 // Draw enemy
                 this.drawEnemyCharacter(this.gameState.enemy);
             }
-
             drawPlayerCharacter(playerState) {
                 let animation;
                 switch (playerState.currentAnimation) {
@@ -251,12 +200,11 @@
                 }
                 if (animation && animation.image.complete) {
                     animation.update();
-                    let yOffset = -75; // только для игрока
-                    let xOffset = 0;   // если нужно
+                    let yOffset = -75;
+                    let xOffset = 0;
                     animation.draw(this.ctx, playerState.x + xOffset, playerState.y + yOffset, playerState.facingRight);
                 }
             }
-
             drawEnemyCharacter(enemyState) {
                 let animation;
                 switch (enemyState.currentAnimation) {
@@ -269,8 +217,8 @@
                 }
                 if (animation && animation.image.complete) {
                     animation.update();
-                    let yOffset = -300; // только для врага
-                    let xOffset = -300;   // если нужно
+                    let yOffset = -300;
+                    let xOffset = -300;
                     animation.draw(this.ctx, enemyState.x + xOffset, enemyState.y + yOffset, enemyState.facingRight);
                 }
             }
@@ -281,7 +229,7 @@
         async function initGame() {
             gameRenderer = new GameRenderer();
             gameLoop = setInterval(() => {
-                gameRenderer.sendInput(); // <--- добавьте сюда!
+                gameRenderer.sendInput();
                 gameRenderer.render();
             }, 1000 / 60);
             setInterval(() => {
