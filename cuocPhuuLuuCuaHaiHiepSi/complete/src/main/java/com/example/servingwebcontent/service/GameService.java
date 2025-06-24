@@ -5,7 +5,6 @@ import com.example.servingwebcontent.dto.*;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 @Service
 public class GameService {
@@ -23,13 +22,18 @@ public class GameService {
     private boolean enemyAttacking = false;
     private boolean gameOver = false;
     private String winner = null;
-    private boolean onPlatform = false; // Добавлено поле
+    private boolean onPlatform = false;
 
-    // --- Новые поля для врага ---
-    private int enemyY = groundY - 100;
+    // Enemy fields
+    private int enemyY = groundY + 100;
     private int enemyVelocityY = 0;
     private boolean enemyJumping = false;
     private boolean enemyOnPlatform = false;
+    private int enemyHitboxOffsetX = -300;
+    private int enemyHitboxOffsetY = -300;
+    private int enemyHitboxWidth = p2Width;
+    private int enemyHitboxHeight = 160;
+    private boolean enemyFrozen = false;
 
     public GameService() {
         initializeGame();
@@ -39,8 +43,6 @@ public class GameService {
         p1 = new Player("John", 100, 15);
         e1 = new Enemies("Grom", 100, 20);
         p1Y = groundY;
-        
-        // Initialize platforms
         platforms.add(new Platforms(200, 200, 150, 10));
         platforms.add(new Platforms(500, 350, 150, 10));
     }
@@ -53,42 +55,32 @@ public class GameService {
                 platform.getWidth(), platform.getHeight()
             ));
         }
-
         PlayerState player1State = new PlayerState(
             p1.getName(), p1.getHealth(), p1.getStrength(),
             p1X, p1Y, facingRight, movingLeft, movingRight,
             jumping, attacking, p1Hurt, velocityY, getCurrentAnimation()
         );
-
         PlayerState enemyState = new PlayerState(
             e1.getName(), e1.getHealth(), e1.getStrength(),
             p2X, enemyY, enemyFacingRight, enemyMovingLeft, enemyMovingRight,
             enemyJumping, enemyAttacking, e1Hurt, enemyVelocityY, getEnemyCurrentAnimation()
         );
-
         return new GameState(player1State, enemyState, platformStates, gameOver, winner, groundY);
     }
 
     public void processInput(GameInput input) {
         if (gameOver) return;
-
-        // Process movement
         movingLeft = input.isKeyA();
         movingRight = input.isKeyD();
-        
         if (movingLeft && !movingRight) {
             facingRight = false;
         } else if (movingRight && !movingLeft) {
             facingRight = true;
         }
-
-        // Process jump
-        if (input.isKeyW() && !jumping && (p1Y >= groundY || onPlatform)) { // Изменено условие
+        if (input.isKeyW() && !jumping && (p1Y >= groundY || onPlatform)) {
             jumping = true;
             velocityY = -20;
         }
-
-        // Process attack
         if (input.isKeySpace() && !attacking) {
             performAttack();
         }
@@ -96,16 +88,13 @@ public class GameService {
 
     public void update() {
         if (gameOver) return;
-
         updatePlayerPhysics();
-        updatePlayerAnimation();
         updateEnemy();
         checkCollisions();
         checkGameOver();
     }
 
     private void updatePlayerPhysics() {
-        // Apply gravity and jumping
         if (jumping) {
             p1Y += velocityY;
             velocityY += 1;
@@ -115,18 +104,14 @@ public class GameService {
                 velocityY = 0;
             }
         }
-
-        // Horizontal movement
         if (movingLeft) {
-            p1X = Math.max(0, p1X - 10);
+            p1X = Math.max(0-100, p1X - 10);
         }
         if (movingRight) {
-            p1X = Math.min(1280 - 40, p1X + 10); // 1280 вместо 800
+            p1X = Math.min(1280 - 100, p1X + 10);
         }
-
-        // Platform collision
         onPlatform = false;
-        int playerHeight = 0; // Используйте реальную высоту игрока!
+        int playerHeight = 0; // Set real player height if needed
         for (Platforms platform : platforms) {
             if (p1X + p1Width > platform.getX() && p1X < platform.getX() + platform.getWidth()) {
                 int playerFeet = p1Y + playerHeight;
@@ -142,7 +127,6 @@ public class GameService {
                 }
             }
         }
-
         if (!onPlatform && p1Y < groundY) {
             if (!jumping) {
                 jumping = true;
@@ -156,23 +140,16 @@ public class GameService {
         }
     }
 
-    private void updatePlayerAnimation() {
-        // Animation logic would be handled by client
-        // This is just for state tracking
-    }
-
     private void updateEnemy() {
-        // Simple enemy AI
-        int leftBound = 300;
-        int rightBound = 700;
-
+        if (enemyFrozen) return;
+        int leftBound = 350;
+        int rightBound = 650;
         if (enemyPauseTimer > 0) {
             enemyPauseTimer--;
             enemyMovingLeft = false;
             enemyMovingRight = false;
             return;
         }
-
         if (enemyMovingRight) {
             p2X += enemySpeed;
             if (p2X >= rightBound) {
@@ -194,16 +171,11 @@ public class GameService {
                 enemyMovingRight = true;
             }
         }
-
-        // Enemy facing direction
         if (enemyMovingRight) {
             enemyFacingRight = true;
         } else if (enemyMovingLeft) {
             enemyFacingRight = false;
         }
-
-        // --- Платформы и прыжки для врага ---
-        // Гравитация и прыжок
         if (enemyJumping) {
             enemyY += enemyVelocityY;
             enemyVelocityY += 1;
@@ -213,10 +185,8 @@ public class GameService {
                 enemyVelocityY = 0;
             }
         }
-
-        // Проверка платформ
         enemyOnPlatform = false;
-        int enemyHeight = 100; // как у игрока
+        int enemyHeight = 100; // Set real enemy height if needed
         for (Platforms platform : platforms) {
             if (p2X + p2Width > platform.getX() && p2X < platform.getX() + platform.getWidth()) {
                 int enemyFeet = enemyY + enemyHeight;
@@ -232,7 +202,6 @@ public class GameService {
                 }
             }
         }
-
         if (!enemyOnPlatform && enemyY < groundY - 100) {
             if (!enemyJumping) {
                 enemyJumping = true;
@@ -248,53 +217,56 @@ public class GameService {
 
     private void performAttack() {
         if (attacking) return;
-
         attacking = true;
-
-        // Check if player is close enough to enemy
-        if (Math.abs(p1X - p2X) < (p1Width + p2Width) / 4) {
+        int enemyHitboxX = p2X + enemyHitboxOffsetX;
+        int enemyHitboxY = enemyY + enemyHitboxOffsetY;
+        boolean xOverlap = (p1X + p1Width > enemyHitboxX) && (p1X < enemyHitboxX + enemyHitboxWidth);
+        boolean yOverlap = (p1Y < enemyHitboxY + enemyHitboxHeight) && (p1Y + 114 > enemyHitboxY); // 114 = player height
+        if (xOverlap && yOverlap) {
             p1.attack(e1);
-            
             if (!e1.isAlive()) {
                 gameOver = true;
                 winner = p1.getName();
                 return;
             }
-
             e1Hurt = true;
-            
-            // Enemy counter-attack after delay
             scheduleEnemyAttack();
         }
-
-        // Reset attack state after delay
         scheduleAttackReset();
     }
 
     private void scheduleEnemyAttack() {
-        // In a real implementation, this would use a timer
-        // For now, we'll simulate it in the next update
         new Thread(() -> {
             try {
-                Thread.sleep(500);
-                if (!gameOver && Math.abs(p1X - p2X) < (p1Width + p2Width) / 4) {
-                    enemyAttacking = true;
+                enemyFrozen = true;
+                enemyMovingLeft = false;
+                enemyMovingRight = false;
+                enemyAttacking = true;
+                e1Hurt = true;
+
+                Thread.sleep(800);
+
+                int enemyHitboxX = p2X + enemyHitboxOffsetX;
+                int enemyHitboxY = enemyY + enemyHitboxOffsetY;
+                boolean xOverlap = (p1X + p1Width > enemyHitboxX) && (p1X < enemyHitboxX + enemyHitboxWidth);
+                boolean yOverlap = (p1Y < enemyHitboxY + enemyHitboxHeight) && (p1Y + 114 > enemyHitboxY);
+                if (!gameOver && xOverlap && yOverlap) {
                     e1.attack(p1);
-                    
                     if (!p1.isAlive()) {
                         gameOver = true;
                         winner = e1.getName();
                         return;
                     }
-                    
                     p1Hurt = true;
-                    
-                    // Reset hurt state
-                    Thread.sleep(900);
-                    enemyAttacking = false;
+                    Thread.sleep(700); // Short player hurt animation
                     p1Hurt = false;
                 }
+
+                enemyAttacking = false;
                 e1Hurt = false;
+                enemyFrozen = false;
+                enemyMovingRight = true;
+
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
@@ -313,7 +285,7 @@ public class GameService {
     }
 
     private void checkCollisions() {
-        // Additional collision logic can be added here
+        // Implement collision logic if needed
     }
 
     private void checkGameOver() {
@@ -332,8 +304,8 @@ public class GameService {
     }
 
     private String getEnemyCurrentAnimation() {
-        if (e1Hurt) return "hurt";
         if (enemyAttacking) return "attack";
+        if (e1Hurt) return "hurt";
         if (enemyMovingLeft || enemyMovingRight) return "run";
         return "idle";
     }

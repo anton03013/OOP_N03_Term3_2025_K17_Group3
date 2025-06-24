@@ -4,27 +4,37 @@
 
 ## 📖 Mô Tả
 
-**Platformer RPG 2D** là trò chơi nhập vai 2D đơn giản nhưng hấp dẫn, nơi bạn điều khiển một hiệp sĩ trong hành trình vượt qua chướng ngại, chiến đấu với quái vật và thu thập vật phẩm.
+**Platformer RPG 2D** là một trò chơi nhập vai 2D đơn giản nhưng hấp dẫn, nơi bạn điều khiển một hiệp sĩ trong hành trình vượt qua chướng ngại vật, chiến đấu với quái vật và thu thập vật phẩm.
 
-- Được phát triển bằng **Java**
-- Giao diện đồ họa bằng **Swing**
+
+- Ngôn ngữ: **Java**
+- Framework: **Spring Boot**
 - Áp dụng các nguyên lý **OOP**: đóng gói, kế thừa, đa hình, trừu tượng
 
 ---
 
 ## 🛠️ Tính Năng
 
-- ⚔️ **Hệ Thống Chiến Đấu Động**  
-- 🧗 **Cơ Chế Platformer**  
-- 🧱 **Thiết Kế Hướng Đối Tượng**  
-- 🖥 **Giao Diện Swing Đơn Giản**
+⚔️ Hệ Thống Chiến Đấu Động: Hiệp sĩ chiến đấu với quái vật bằng các đòn tấn công.
 
+
+
+🧗 Cơ Chế Platformer: Di chuyển, nhảy qua các nền tảng và vượt chướng ngại.
+
+
+
+🧱 Thiết Kế Hướng Đối Tượng: Sử dụng các class để quản lý hiệp sĩ, quái vật và nền tảng.
+
+
+
+🖥 Giao Diện Web Đơn Giản: Truy cập trò chơi qua trình duyệt với Spring Boot.
 ---
 
 ## 🚀 Công Nghệ Sử Dụng
 
 - **Ngôn ngữ**: Java  
-- **Thư viện**:  
+- **Thư viện**:
+  - Spring Web: Xây dựng giao diện và API
   - Swing: UI, vẽ đồ họa 2D, quản lý sprite
 
 ---
@@ -51,21 +61,20 @@
 ---
 
 ## 🏆 Cải Tiến Trong Tương Lai
-
-- Thêm lớp nhân vật mới: *Pháp Sư, Cung Thủ*  
-- Mở rộng cấp độ và quái vật  
-- Cải thiện đồ họa, hiệu ứng hoạt hình
-
+-  Thêm cốt truyện và nhiệm vụ cho hiệp sĩ
+-  Mở rộng cấp độ và các loại quái vật
+-  Cải thiện đồ họa, hiệu ứng hoạt hình
+-  Tích hợp âm thanh và nhạc nền
 ---
 
 ## 🛠️ Ứng Dụng Quản Lý Đấu Trường Game 2D
 
-### 💻 Giao Diện: Java Swing
+### 💻 Giao Diện: Spring Boot Web
 
 ### 📋 Quản Lý Nhân Vật (Player)
 
-- Thêm, sửa, xóa nhân vật  
-- Lọc và liệt kê theo: tên, sức mạnh, máu,...
+-  Cập nhật thông tin hiệp sĩ: sức mạnh, máu, vị trí
+-  Lọc và hiển thị trạng thái hiệp sĩ
 
 ### 👾 Quản Lý Quái Vật (Enemies)
 
