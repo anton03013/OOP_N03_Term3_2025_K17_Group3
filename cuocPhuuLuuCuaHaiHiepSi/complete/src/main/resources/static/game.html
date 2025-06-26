@@ -9,6 +9,7 @@
 <body>
     <div class="game-container">
         <canvas id="gameCanvas" width="1280" height="600"></canvas>
+        <button id="playAgainButton" style="display: none;">Chơi Lại</button>
     </div>
     <script>
         // Handles sprite animation
@@ -68,6 +69,7 @@
                 ];
                 this.gameState = null;
                 this.keys = {};
+                this.playAgainButton = document.getElementById('playAgainButton');
                 this.setupEventListeners();
                 this.loadTextures();
             }
@@ -85,6 +87,7 @@
                     this.keys[e.code] = false;
                     this.sendInput();
                 });
+                this.playAgainButton.addEventListener('click', () => this.resetGame());
             }
             async loadTextures() {
                 const textureConfigs = [
@@ -105,6 +108,7 @@
                 }
             }
             async sendInput() {
+                if (this.isGameOver()) return;
                 const input = {
                     keyA: this.keys['KeyA'] || false,
                     keyD: this.keys['KeyD'] || false,
@@ -126,15 +130,37 @@
                     console.error('Error sending input:', error);
                 }
             }
+            async resetGame() {
+                try {
+                    const response = await fetch('/api/game/reset', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    if (response.ok) {
+                        this.gameState = await response.json();
+                        this.playAgainButton.style.display = 'none';
+                    }
+                } catch (error) {
+                    console.error('Error resetting game:', error);
+                }
+            }
             async updateGameState() {
                 try {
                     const response = await fetch('/api/game/state');
                     if (response.ok) {
                         this.gameState = await response.json();
+                        if (this.isGameOver()) {
+                            this.playAgainButton.style.display = 'block';
+                        }
                     }
                 } catch (error) {
                     console.error('Error updating game state:', error);
                 }
+            }
+            isGameOver() {
+                return this.gameState && (this.gameState.player1.health <= 0 || this.gameState.enemy.health <= 0);
             }
             render() {
                 if (!this.gameState) return;
