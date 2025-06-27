@@ -11,6 +11,14 @@
         <canvas id="gameCanvas" width="1280" height="600"></canvas>
         <button id="playAgainButton">Chơi Lại</button>
     </div>
+
+    <div id="popup" class="popup-overlay">
+        <div class="popup-content">
+            <h2 id="popup-title">🏆 Winner: </h2>
+            <button id="popup-restart">Play again</button>
+        </div>
+    </div>
+
     <script>
         // Handles sprite animation
         class AnimationHandler {
@@ -87,6 +95,7 @@
                     this.keys[e.code] = false;
                     this.sendInput();
                 });
+                this.playAgainButton = document.getElementById('popup-restart'); 
                 this.playAgainButton.addEventListener('click', () => this.resetGame());
             }
             async loadTextures() {
@@ -159,6 +168,17 @@
             }
             render() {
                 if (!this.gameState) return;
+                const popup = document.getElementById('popup');
+                const popupTitle = document.getElementById('popup-title');
+                const restartBtn = document.getElementById('popup-restart');
+
+                if (this.gameState.gameOver) {
+                    popup.style.display = 'flex';
+                    popupTitle.textContent = `🏆 Winner: ${this.gameState.winner}`;
+                } else {
+                    popup.style.display = 'none';
+                }
+                
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
                 for (const bg of this.backgrounds) {
                     if (bg.complete && bg.naturalWidth > 0) {
