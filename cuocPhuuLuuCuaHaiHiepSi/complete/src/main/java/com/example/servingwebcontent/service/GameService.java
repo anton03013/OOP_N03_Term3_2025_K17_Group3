@@ -95,6 +95,7 @@ public class GameService {
     }
 
     private void updatePlayerPhysics() {
+        if (gameOver) return;
         if (jumping) {
             p1Y += velocityY;
             velocityY += 1;
@@ -141,7 +142,7 @@ public class GameService {
     }
 
     private void updateEnemy() {
-        if (enemyFrozen) return;
+        if (enemyFrozen || gameOver) return;
         int leftBound = 350;
         int rightBound = 650;
         if (enemyPauseTimer > 0) {
@@ -265,7 +266,9 @@ public class GameService {
                 enemyAttacking = false;
                 e1Hurt = false;
                 enemyFrozen = false;
-                enemyMovingRight = true;
+                if (!gameOver) {
+                    enemyMovingRight = true;
+                }
 
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
@@ -318,6 +321,7 @@ public class GameService {
         p1X = 50;
         p2X = 300;
         p1Y = groundY;
+        enemyY = groundY + 100;
         jumping = false;
         movingLeft = false;
         movingRight = false;
@@ -325,10 +329,15 @@ public class GameService {
         e1Hurt = false;
         attacking = false;
         velocityY = 0;
+        enemyVelocityY = 0;
+        enemyJumping = false;
         enemyMovingRight = true;
         enemyMovingLeft = false;
         enemyFacingRight = true;
         enemyPauseTimer = 0;
         enemyAttacking = false;
+        enemyFrozen = false;
+        onPlatform = false;
+        enemyOnPlatform = false;
     }
 }

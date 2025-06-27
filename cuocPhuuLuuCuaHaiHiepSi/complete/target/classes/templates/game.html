@@ -9,7 +9,7 @@
 <body>
     <div class="game-container">
         <canvas id="gameCanvas" width="1280" height="600"></canvas>
-        <button id="playAgainButton" style="display: none;">Chơi Lại</button>
+        <button id="playAgainButton">Chơi Lại</button>
     </div>
     <script>
         // Handles sprite animation
@@ -108,7 +108,6 @@
                 }
             }
             async sendInput() {
-                if (this.isGameOver()) return;
                 const input = {
                     keyA: this.keys['KeyA'] || false,
                     keyD: this.keys['KeyD'] || false,
@@ -140,7 +139,6 @@
                     });
                     if (response.ok) {
                         this.gameState = await response.json();
-                        this.playAgainButton.style.display = 'none';
                     }
                 } catch (error) {
                     console.error('Error resetting game:', error);
@@ -151,9 +149,6 @@
                     const response = await fetch('/api/game/state');
                     if (response.ok) {
                         this.gameState = await response.json();
-                        if (this.isGameOver()) {
-                            this.playAgainButton.style.display = 'block';
-                        }
                     }
                 } catch (error) {
                     console.error('Error updating game state:', error);
