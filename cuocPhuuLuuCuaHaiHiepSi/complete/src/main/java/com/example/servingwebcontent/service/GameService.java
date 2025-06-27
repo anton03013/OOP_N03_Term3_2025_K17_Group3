@@ -40,8 +40,8 @@ public class GameService {
     }
 
     private void initializeGame() {
-        p1 = new Player("John", 100, 15);
-        e1 = new Enemies("Grom", 100, 20);
+        p1 = new Player("Ichigo", 100, 25);
+        e1 = new Enemies("NightBoneBone", 100, 15);
         p1Y = groundY;
         platforms.add(new Platforms(200, 200, 150, 10));
         platforms.add(new Platforms(500, 350, 150, 10));
