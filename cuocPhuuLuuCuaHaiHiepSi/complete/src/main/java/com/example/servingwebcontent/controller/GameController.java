@@ -5,9 +5,10 @@ import com.example.servingwebcontent.dto.GameState;
 import com.example.servingwebcontent.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+@Controller
 @RequestMapping("/api/game")
 @CrossOrigin(origins = "*")
 public class GameController {
@@ -15,13 +16,20 @@ public class GameController {
     @Autowired
     private GameService gameService;
 
+    @GetMapping("/game")
+    public String gamePage() {
+        return "game";
+    }
+
     @GetMapping("/state")
+    @ResponseBody
     public ResponseEntity<GameState> getGameState() {
         gameService.update();
         return ResponseEntity.ok(gameService.getGameState());
     }
 
     @PostMapping("/input")
+    @ResponseBody
     public ResponseEntity<GameState> processInput(@RequestBody GameInput input) {
         gameService.processInput(input);
         gameService.update();
@@ -29,12 +37,14 @@ public class GameController {
     }
 
     @PostMapping("/reset")
+    @ResponseBody
     public ResponseEntity<GameState> resetGame() {
         gameService.resetGame();
         return ResponseEntity.ok(gameService.getGameState());
     }
 
     @GetMapping("/textures")
+    @ResponseBody
     public ResponseEntity<String[]> getTexturePaths() {
         String[] textures = {
             "/texture/Sprites/Idle1.png",
