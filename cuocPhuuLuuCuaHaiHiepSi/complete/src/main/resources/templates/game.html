@@ -172,23 +172,25 @@
                 const popupTitle = document.getElementById('popup-title');
                 const restartBtn = document.getElementById('popup-restart');
 
-                if (this.gameState.gameOver) {
-                    popup.style.display = 'flex';
-                    
-                    const winnerName = (this.gameState.winner || '').trim().toLowerCase();
-
-                    if (winnerName === 'grom') {
-                        popupTitle.textContent = '💀 Game Over!';
-                        popup.classList.remove('popup-winner');
-                        popup.classList.add('popup-gameover');
-                    } else {
-                        popupTitle.textContent = `🏆 Winner: ${this.gameState.winner}`;
-                        popup.classList.remove('popup-gameover');
-                        popup.classList.add('popup-winner');
-                    }
-                } else {
+                if (this.gameState.gameOver && !this.popupShown) {
+                    this.popupShown = true; 
+                    setTimeout(() => {
+                        popup.style.display = 'flex';
+                        const winnerName = (this.gameState.winner || '').trim().toLowerCase();
+                        if (winnerName === 'grom') {
+                            popupTitle.textContent = '💀 Game Over!';
+                            popup.classList.remove('popup-winner');
+                            popup.classList.add('popup-gameover');
+                        } else {
+                            popupTitle.textContent = `🏆 Winner: ${this.gameState.winner}`;
+                            popup.classList.remove('popup-gameover');
+                            popup.classList.add('popup-winner');
+                        }
+                    }, 100);
+                } else if (!this.gameState.gameOver) {
                     popup.style.display = 'none';
                     popup.classList.remove('popup-winner', 'popup-gameover');
+                    this.popupShown = false; 
                 }
                 
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
